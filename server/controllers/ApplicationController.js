@@ -63,6 +63,7 @@ const submitApplication = async (req, res) => {
         const application = new Application(applicationDetails);
         const savedApplication = await application.save();
         user.application = savedApplication._id;
+        user.applicationStatus = "Pending";
         await user.save();
         const applicationId = savedApplication._id;
 
