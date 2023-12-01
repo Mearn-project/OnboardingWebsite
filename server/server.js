@@ -6,7 +6,7 @@ const ApplicationRouter = require('./routes/ApplicationRouter');
 const DocumentRouter = require('./routes/DocumentRouter');
 const UserInfoRouter = require('./routes/UserInfoRouter');
 const VisaRouter = require('./routes/VisaRouter');
-const ReportRouter = require('./routes/HousingRouter');
+const HousingRouter = require('./routes/HousingRouter');
 
 const cors = require('cors')
 const bodyParser = require('body-parser');
