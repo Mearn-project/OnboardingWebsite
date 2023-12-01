@@ -9,6 +9,7 @@ const VisaSchema = new mongoose.Schema({
             default: 'Pending'
         },
         feedback: String,
+        url: String
     },
     optEAD: {
         status: {
@@ -17,6 +18,7 @@ const VisaSchema = new mongoose.Schema({
             default: 'Pending'
         },
         feedback: String,
+        url: String
     },
     i983: {
         status: {
@@ -43,6 +45,7 @@ const VisaSchema = new mongoose.Schema({
             default: 'Pending'
         },
         feedback: String,
+        url: String
     }
 })
 

@@ -1,6 +1,6 @@
 const s3 = require('../utils/aws');
-const PDFJS = require('pdfjs-dist');
-const { createCanvas } = require('canvas')
+// const PDFJS = require('pdfjs-dist');
+// const { createCanvas } = require('canvas')
 
 const downloadDocument = async (req, res) => {
     const { filename } = req.params;
@@ -62,36 +62,36 @@ const getDocumentFromS3 = async (filename) => {
 };
 
 
-const extractTextFromPDF = async (pdfDocument) => {
-  try {
+// const extractTextFromPDF = async (pdfDocument) => {
+//   try {
 
-    const pdf = await PDFJS.getDocument(pdfDocument).promise;
+//     const pdf = await PDFJS.getDocument(pdfDocument).promise;
 
-    const page = await pdf.getPage(1);
-    const textContent = await page.getTextContent();
-    const pageText = textContent.items.map((item) => item.str).join(' ');
+//     const page = await pdf.getPage(1);
+//     const textContent = await page.getTextContent();
+//     const pageText = textContent.items.map((item) => item.str).join(' ');
 
-    return pageText;
-  } catch (error) {
-    console.error('Error extracting text content from PDF:', error);
-    return null;
-  }
-};
+//     return pageText;
+//   } catch (error) {
+//     console.error('Error extracting text content from PDF:', error);
+//     return null;
+//   }
+// };
 
 
-const generatePreview = async (textContent) => {
+// const generatePreview = async (textContent) => {
 
-    const pdf = await PDFJS.getDocument({ data: textContent }).promise;
+//     const pdf = await PDFJS.getDocument({ data: textContent }).promise;
 
-    const page = await pdf.getPage(1);
-    const viewport = page.getViewport({ scale: 1.0 });
-    const canvas = createCanvas(viewport.width, viewport.height);
-    const context = canvas.getContext('2d');
-    await page.render({ canvasContext: context, viewport }).promise;
+//     const page = await pdf.getPage(1);
+//     const viewport = page.getViewport({ scale: 1.0 });
+//     const canvas = createCanvas(viewport.width, viewport.height);
+//     const context = canvas.getContext('2d');
+//     await page.render({ canvasContext: context, viewport }).promise;
 
-    const imageDataUrl = canvas.toDataURL();
+//     const imageDataUrl = canvas.toDataURL();
   
-    return imageDataUrl;
-  };
+//     return imageDataUrl;
+//   };
 
 module.exports = { downloadDocument, previewDocument };

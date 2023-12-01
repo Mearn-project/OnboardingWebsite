@@ -5,6 +5,8 @@ const { isHR } = require('./controllers/UserController');
 const ApplicationRouter = require('./routes/ApplicationRouter');
 const DocumentRouter = require('./routes/DocumentRouter');
 const UserInfoRouter = require('./routes/UserInfoRouter');
+const VisaRouter = require('./routes/VisaRouter');
+const ReportRouter = require('./routes/HousingRouter');
 
 const cors = require('cors')
 const bodyParser = require('body-parser');
@@ -20,6 +22,7 @@ app.use('/application', ApplicationRouter);
 app.use('/documents', DocumentRouter);
 app.use('/personal-info', UserInfoRouter);
 app.use('/visa', VisaRouter);
+app.use('/housing', HousingRouter);
 
 app.get('/', async (req, res) => {
 

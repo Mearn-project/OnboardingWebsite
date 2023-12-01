@@ -27,21 +27,8 @@ const UserSchema = new mongoose.Schema({
         ref: 'Visa'
     },
     housing: {
-        address: {
-            type: String,
-        },
-        roommates: [
-            {
-                type: refType,
-                ref: 'User'
-            }
-        ],
-        facilityReports: [
-            {
-                type: refType,
-                ref: 'FacilityReport'
-            }
-        ]
+        type: refType,
+        ref: 'House'
     }
 
 })
