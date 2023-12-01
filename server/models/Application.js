@@ -2,11 +2,7 @@ const mongoose = require('mongoose');
 const refType = mongoose.Schema.Types.ObjectId;
 
 const ApplicationSchema = new mongoose.Schema({
-    status: {
-        type: String,
-        enum: ['Not Started', 'Pending', 'Rejected', 'Approved'],
-        default: 'Not Started'
-    },
+
     firstName: {
         type: String,
         required: true

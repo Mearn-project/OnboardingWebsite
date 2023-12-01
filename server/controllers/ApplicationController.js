@@ -1,6 +1,6 @@
 // const { application } = require('express');
 // const path = require('path');
-
+const User = require('../models/User');
 const Application = require('../models/Application');
 
 const s3 = require('../utils/aws');
@@ -52,11 +52,21 @@ const submitApplication = async (req, res) => {
             emergencyContacts: body.emergencyContacts || []
         }
 
+        let userId;
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
+        const user = await User.findById(userId).populate('application');
+
         const application = new Application(applicationDetails);
         const savedApplication = await application.save();
+        user.application = savedApplication._id;
+        await user.save();
         const applicationId = savedApplication._id;
 
-        res.json({ message: 'Application submitted successfully', applicationId });
+        res.status(201).json(user.application);
 
     } catch (error) {
         console.error('Error submitting application:', error);

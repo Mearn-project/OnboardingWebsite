@@ -22,6 +22,11 @@ const UserSchema = new mongoose.Schema({
         type: refType,
         ref: 'Application'
     },
+    applicationStatus: {
+        type: String,
+        enum: ['Not Started', 'Pending', 'Rejected', 'Approved'],
+        default: 'Not Started'
+    },
     visa: {
         type: refType,
         ref: 'Visa'
