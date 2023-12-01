@@ -60,6 +60,10 @@ const submitApplication = async (req, res) => {
         }
         const user = await User.findById(userId).populate('application');
 
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+        }
+
         const application = new Application(applicationDetails);
         const savedApplication = await application.save();
         user.application = savedApplication._id;
