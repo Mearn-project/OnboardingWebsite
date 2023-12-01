@@ -25,7 +25,6 @@ const UserSchema = new mongoose.Schema({
     housing: {
         address: {
             type: String,
-            required: true,
         },
         roommates: [
             {
