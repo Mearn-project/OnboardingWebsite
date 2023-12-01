@@ -20,7 +20,11 @@ const UserSchema = new mongoose.Schema({
     },
     application: {
         type: refType,
-        ref: 'Application',
+        ref: 'Application'
+    },
+    visa: {
+        type: refType,
+        ref: 'Visa'
     },
     housing: {
         address: {
