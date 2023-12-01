@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 const refType = mongoose.Schema.Types.ObjectId;
 
 const VisaSchema = new mongoose.Schema({
-    user: {
-        type: refType,
-        ref: 'User',
-        required: true
-    },
     optReceipt: {
         status: {
             type: String,
@@ -31,13 +26,14 @@ const VisaSchema = new mongoose.Schema({
         },
         feedback: String,
         filledFormUrl: String,
+        // should have two template for downloading
         emptyTemplateUrl: {
             type: String,
-            required: true
+            // required: true
         },
         sampleTemplateUrl: {
             type: String,
-            required: true
+            // required: true
         }
     },
     i20: {
