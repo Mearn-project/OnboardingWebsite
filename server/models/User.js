@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema({
   feedback: {
     type: String,
   },
+  visa: {
+    type: refType,
+    ref: "Visa",
+  },
 });
 
 const User = mongoose.model("User", UserSchema);

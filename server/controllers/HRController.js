@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const Email = require("../models/Email");
+const Visa = require("../models/Visa");
+const Application = require("../models/Application");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -17,10 +19,10 @@ const EMAIL_PWD = process.env.EMAIL_PWD;
 
 const getUsers = async (req, res) => {
   try {
-    // Fetch users with applicationStatus set to "Approved"
-    const users = await User.find({ applicationStatus: "Approved" }).sort({
-      lastName: 1,
-    });
+    // Fetch users with applicationStatus set to "Approved" and populate the application field
+    const users = await User.find({ applicationStatus: "Approved" })
+      .populate("application") // This will populate the 'application' field with the actual application data
+      .sort({ lastName: 1 });
 
     // Send the users and total number as a JSON response
     res.json({ users, totalEmployees: users.length });
@@ -37,7 +39,7 @@ const getUserById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(404).json({ error: "Invalid user ID" });
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("application");
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -67,7 +69,7 @@ const getUsersByName = async (req, res) => {
         },
         { applicationStatus: "Approved" },
       ],
-    });
+    }).populate("application");
 
     res.json(users);
   } catch (error) {
@@ -233,32 +235,18 @@ const getApplicationById = async (req, res) => {
   try {
     const applicationId = req.params.applicationId;
 
-    // Check if applicationId is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(applicationId)) {
-      return res.status(404).json({ error: "Invalid application ID" });
-    }
+    const application = await Application.findById(applicationId);
 
-    // Find the user with the specified application ID
-    const userWithApplication = await User.findOne({
-      application: applicationId,
-    });
-
-    if (!userWithApplication) {
+    if (!application) {
       return res.status(404).json({ error: "Application not found" });
     }
 
-    // Extract application information from the user
-    const application = userWithApplication.application;
-
-    return res.status(200).json({
-      application,
-    });
+    res.status(200).json({ application });
   } catch (error) {
     console.error("Error fetching application by ID:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 // Function to approve an application by ID
 const approveApplication = async (req, res) => {
   try {
@@ -325,10 +313,273 @@ const rejectApplication = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+const getVisaApprovedUsers = async (req, res) => {
+  try {
+    // Fetch users with all visa fields set to "Approved"
+    const users = await User.find({
+      "visa.optReceipt.status": "Approved",
+      "visa.optEAD.status": "Approved",
+      "visa.i983.status": "Approved",
+      "visa.i20.status": "Approved",
+    })
+      .populate("visa")
+      .populate("application");
+
+    // Send the users as a JSON response
+    res.json({ users });
+  } catch (error) {
+    console.error("Error fetching visa-approved users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const getVisaApprovedUsersByName = async (req, res) => {
+  try {
+    const query = req.params.name;
+
+    // Perform a case-insensitive search for users with all visa documents status set to "Approved" and visa not null
+    const users = await User.find({
+      $and: [
+        {
+          $or: [
+            { firstName: { $regex: query, $options: "i" } },
+            { lastName: { $regex: query, $options: "i" } },
+            { preferredName: { $regex: query, $options: "i" } },
+          ],
+        },
+        { visa: { $ne: null } }, // Ensure visa is not null
+        {
+          "visa.optReceipt.status": "Approved",
+          "visa.optEAD.status": "Approved",
+          "visa.i983.status": "Approved",
+          "visa.i20.status": "Approved",
+        },
+      ],
+    })
+      .populate("application")
+      .populate("visa");
+
+    res.json(users);
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const getVisaNotApprovedUsers = async (req, res) => {
+  try {
+    // Fetch users with at least one visa field not set to "Approved"
+    const users = await User.find({
+      $or: [
+        { "visa.optReceipt.status": { $ne: "Approved" } },
+        { "visa.optEAD.status": { $ne: "Approved" } },
+        { "visa.i983.status": { $ne: "Approved" } },
+        { "visa.i20.status": { $ne: "Approved" } },
+      ],
+      visa: { $exists: true, $ne: null },
+    })
+      .populate("visa") // Populate the 'visa' field to get the complete visa information
+      .populate("application"); // Optionally, you can populate the 'application' field as well
+
+    // Send the users as a JSON response
+    res.json({ users });
+  } catch (error) {
+    console.error("Error fetching visa-not-approved users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getVisaById = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    res.status(200).json({ visa });
+  } catch (error) {
+    console.error("Error fetching visa by ID:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const approveVisaOPTReceipt = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.optReceipt.status = "Approved";
+
+    await visa.save();
+
+    res.status(200).json({ message: "Visa OPT Receipt approved successfully" });
+  } catch (error) {
+    console.error("Error approving Visa OPT Receipt:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const approveVisaEAD = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.optEAD.status = "Approved";
+
+    await visa.save();
+
+    res.status(200).json({ message: "Visa EAD approved successfully" });
+  } catch (error) {
+    console.error("Error approving Visa EAD:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const approveVisaI983 = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.i983.status = "Approved";
+
+    await visa.save();
+
+    res.status(200).json({ message: "Visa I-983 approved successfully" });
+  } catch (error) {
+    console.error("Error approving Visa I-983:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const approveVisaI20 = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.i20.status = "Approved";
+
+    await visa.save();
+
+    res.status(200).json({ message: "Visa I-20 approved successfully" });
+  } catch (error) {
+    console.error("Error approving Visa I-20:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const rejectVisaOPTReceipt = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+    const { feedback } = req.body;
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.optReceipt.status = "Rejected";
+    visa.optReceipt.feedback = feedback;
+    await visa.save();
+
+    res.status(200).json({ message: "Visa OPT Receipt rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting Visa OPT Receipt:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const rejectVisaEAD = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+    const { feedback } = req.body;
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.optEAD.status = "Rejected";
+    visa.optEAD.feedback = feedback;
+    await visa.save();
+
+    res.status(200).json({ message: "Visa EAD rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting Visa EAD:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const rejectVisaI983 = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+    const { feedback } = req.body;
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.i983.status = "Rejected";
+    visa.i983.feedback = feedback;
+    await visa.save();
+
+    res.status(200).json({ message: "Visa I-983 rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting Visa I-983:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const rejectVisaI20 = async (req, res) => {
+  try {
+    const visaId = req.params.visaId;
+    const { feedback } = req.body;
+    const visa = await Visa.findById(visaId);
+
+    if (!visa) {
+      return res.status(404).json({ error: "Visa not found" });
+    }
+
+    visa.i20.status = "Rejected";
+    visa.i20.feedback = feedback;
+    await visa.save();
+
+    res.status(200).json({ message: "Visa I-983 rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting Visa I-983:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
+  // Employee Profiles page
+
   getUsers,
   getUserById,
   getUsersByName,
+  //   Hiring Management page
   sendEmail,
   verifyRegistrationToken,
   getAllSentEmails,
@@ -338,4 +589,17 @@ module.exports = {
   getApplicationById,
   approveApplication,
   rejectApplication,
+  //   Visa Status Management page
+  getVisaApprovedUsers,
+  getVisaApprovedUsersByName,
+  getVisaNotApprovedUsers,
+  getVisaById,
+  approveVisaOPTReceipt,
+  approveVisaEAD,
+  approveVisaI983,
+  approveVisaI20,
+  rejectVisaOPTReceipt,
+  rejectVisaEAD,
+  rejectVisaI983,
+  rejectVisaI20,
 };
