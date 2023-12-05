@@ -1,5 +1,6 @@
 // const { application } = require('express');
-// const path = require('path');
+const path = require('path');
+const fs = require('fs');
 const User = require('../models/User');
 const Application = require('../models/Application');
 
@@ -12,9 +13,8 @@ const submitApplication = async (req, res) => {
             files.map(async (file) => {
                 const params = {
                     Bucket: 'onbording',
-                    Key: file.orginalname,
-                    Body: file.buffer,
-                    ACL: 'public-read'
+                    Key: `${uuidv4()}-${file.orginalname}`,
+                    Body: fs.createReadStream(path.normalize(file.path))
                 };
 
                 const uploadedFile = await s3.upload(params).promise();
