@@ -1,0 +1,13 @@
+<div>
+  <input type="text" placeholder="Search employees" (keyup)="search($event.target.value)">
+
+  <table>
+    <tr *ngFor="let employee of employees">
+      <td><a href="/employee/{{employee.id}}" target="_blank">{{employee.name}}</a></td>
+      <td>{{employee.ssn}}</td>
+      <td>{{employee.workAuthorizationTitle}}</td>
+      <td>{{employee.phoneNumber}}</td>
+      <td>{{employee.email}}</td>
+    </tr>
+  </table>
+</div>

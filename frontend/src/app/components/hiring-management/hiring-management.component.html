@@ -1,0 +1,31 @@
+<div>
+  <button (click)="generateToken()">Generate token and send email</button>
+
+  <!-- 令牌历史记录表格 -->
+  <table>
+    <tr>
+      <th>Email Address</th>
+      <th>Person's Name</th>
+      <th>Registration Link</th>
+      <th>Status</th>
+    </tr>
+    <tr *ngFor="let token of tokens">
+      <td>{{ token.email }}</td>
+      <td>{{ token.name }}</td>
+      <td>{{ token.link }}</td>
+      <td>{{ token.status }}</td>
+    </tr>
+  </table>
+
+  <!-- 在职培训申请审查 -->
+  <div *ngFor="let application of applications">
+    <div *ngIf="application.status === 'pending'">
+      <h3>{{ application.fullName }}</h3>
+      <p>{{ application.email }}</p>
+      <button (click)="viewApplication(application.id)">View Application</button>
+      <button (click)="approveApplication(application.id)">Approve</button>
+      <button (click)="rejectApplication(application.id)">Reject</button>
+    </div>
+    <!-- 处理其他状态的申请 -->
+  </div>
+</div>

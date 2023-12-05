@@ -1,0 +1,16 @@
+<div>
+  <button (click)="addHouse()">Add New House</button>
+
+  <table>
+    <tr *ngFor="let house of houses">
+      <td>{{ house.address }}</td>
+      <td>{{ house.landlord.fullName }}</td>
+      <td>{{ house.landlord.phoneNumber }}</td>
+      <td>{{ house.landlord.email }}</td>
+      <td>{{ house.numberOfResidents }}</td>
+      <td><button (click)="viewDetails(house.id)">View Details</button></td>
+      <td><button (click)="deleteHouse(house.id)">Delete</button></td>
+    </tr>
+  </table>
+</div>
+
