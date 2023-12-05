@@ -1,0 +1,134 @@
+<p>onboarding-application works!</p>
+<form [formGroup]="onboardingForm" (ngSubmit)="submitForm()">
+  <!-- Personal Information -->
+  <div>
+    <input formControlName="firstName" placeholder="First Name" required />
+    <input formControlName="lastName" placeholder="Last Name" required />
+    <input formControlName="middleName" placeholder="Middle Name" />
+    <input formControlName="preferredName" placeholder="Preferred Name" />
+  </div>
+
+  <!-- Profile Picture Upload -->
+  <div>
+    <input type="file" (change)="onFileSelect($event, 'profilePicture')" />
+  </div>
+
+  <!-- Address -->
+  <div formGroupName="address">
+    <input formControlName="building" placeholder="Building/Apt" />
+    <input formControlName="street" placeholder="Street Name" />
+    <input formControlName="city" placeholder="City" />
+    <input formControlName="state" placeholder="State" />
+    <input formControlName="zip" placeholder="Zip Code" />
+  </div>
+
+  <!-- Phone Numbers -->
+  <div formGroupName="phoneNumbers">
+    <input formControlName="cell" placeholder="Cell Phone Number" />
+    <input formControlName="work" placeholder="Work Phone Number" />
+  </div>
+
+  <!-- Car Information -->
+  <div formGroupName="carInfo">
+    <input formControlName="make" placeholder="Car Make" />
+    <input formControlName="model" placeholder="Car Model" />
+    <input formControlName="color" placeholder="Car Color" />
+  </div>
+
+  <!-- Email -->
+  <div>
+    <input formControlName="email" placeholder="Email" />
+  </div>
+
+  <!-- Personal Information -->
+  <div formGroupName="personalInfo">
+    <input formControlName="ssn" placeholder="Social Security Number" />
+    <input type="date" formControlName="dob" placeholder="Date of Birth" />
+    <select formControlName="gender">
+      <option value="">Select Gender</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="not_specified">I do not wish to answer</option>
+    </select>
+  </div>
+
+  <!-- Citizenship Status -->
+  <div>
+    <p>Are you a citizen or permanent resident of the U.S?</p>
+    <select formControlName="citizenshipStatus">
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+  </div>
+
+  <!-- Conditional Visa Details -->
+  <div
+    *ngIf="onboardingForm.get('citizenshipStatus')!.value === 'No'"
+    formGroupName="visaDetails"
+  >
+    <select formControlName="visaType">
+      <option value="">Select Visa Type</option>
+      <option value="">F1</option>
+      <option value="">H1B</option>
+    </select>
+    <!-- Conditional OPT Receipt Upload -->
+    <div
+      *ngIf="
+        onboardingForm.get('visaDetails.visaType')!.value === 'F1(CPT/OPT)'
+      "
+    >
+      <input type="file" (change)="onFileSelect($event, 'optReceipt')" />
+    </div>
+    <input formControlName="visaTitle" placeholder="Visa Title" />
+    <input type="date" formControlName="startDate" placeholder="Start Date" />
+    <input type="date" formControlName="endDate" placeholder="End Date" />
+  </div>
+
+  <!-- Driver's License -->
+  <div formGroupName="driverLicense">
+    <label>
+      <input type="checkbox" formControlName="hasLicense" /> Do you have a
+      driver's license?
+    </label>
+    <input formControlName="licenseNumber" placeholder="License Number" />
+    <input
+      type="date"
+      formControlName="expirationDate"
+      placeholder="Expiration Date"
+    />
+    <input type="file" (change)="onFileSelect($event, 'licenseCopy')" />
+  </div>
+
+  <!-- Reference -->
+  <div formGroupName="reference">
+    <input formControlName="firstName" placeholder="Reference First Name" />
+    <input formControlName="lastName" placeholder="Reference Last Name" />
+    <!-- ... other reference fields -->
+  </div>
+
+  <!-- Emergency Contacts (Dynamic FormArray) -->
+  <!-- <div formArrayName="emergencyContacts">
+    <div
+      *ngFor="
+        let contact of onboardingForm.get('emergencyContacts').controls;
+        let i = index
+      "
+      [formGroupName]="i"
+    >
+      <input
+        formControlName="firstName"
+        placeholder="Emergency Contact First Name"
+      />
+      <input
+        formControlName="lastName"
+        placeholder="Emergency Contact Last Name"
+      />
+    </div>
+    <button type="button" (click)="addEmergencyContact()">
+      Add Another Contact
+    </button>
+  </div> -->
+
+  <!-- Submit Button -->
+  <button type="submit">Submit</button>
+</form>
