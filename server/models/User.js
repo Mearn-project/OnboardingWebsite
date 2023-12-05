@@ -34,6 +34,9 @@ const UserSchema = new mongoose.Schema({
     housing: {
         type: refType,
         ref: 'House'
+    },
+    feedback: {
+        type: String
     }
 
 })
