@@ -6,6 +6,7 @@ import { PersonalInformationComponent } from '../../components/employees/persona
 import { LoginComponent } from '../../components/employees/login/login.component';
 import { RegistrationComponent } from '../../components/employees/registration/registration.component';
 import { AppMaterialModule } from '../app.material/app.material.module';
+import { HousingComponent } from '../../components/employees/housing/housing.component';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { AppMaterialModule } from '../app.material/app.material.module';
     PersonalInformationComponent,
     LoginComponent,
     RegistrationComponent,
+    HousingComponent,
   ],
   imports: [CommonModule, ReactiveFormsModule, FormsModule, AppMaterialModule],
   exports: [
@@ -20,6 +22,7 @@ import { AppMaterialModule } from '../app.material/app.material.module';
     PersonalInformationComponent,
     LoginComponent,
     RegistrationComponent,
+    HousingComponent,
   ],
 })
 export class EmployeeModule {}
