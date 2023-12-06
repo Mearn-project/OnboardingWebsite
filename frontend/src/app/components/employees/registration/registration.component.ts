@@ -1,12 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-registration',
-  standalone: true,
-  imports: [],
+  selector: 'employee-registration',
   templateUrl: './registration.component.html',
-  styleUrl: './registration.component.scss'
+  styleUrl: './registration.component.scss',
 })
-export class RegistrationComponent {
-
-}
+export class RegistrationComponent {}
