@@ -1,11 +1,44 @@
 <p>onboarding-application works!</p>
 <form [formGroup]="onboardingForm" (ngSubmit)="submitForm()">
   <!-- Personal Information -->
-  <div>
-    <input formControlName="firstName" placeholder="First Name" required />
-    <input formControlName="lastName" placeholder="Last Name" required />
-    <input formControlName="middleName" placeholder="Middle Name" />
-    <input formControlName="preferredName" placeholder="Preferred Name" />
+  <div formGroupName="name">
+    <!-- First Name Field -->
+    <mat-form-field>
+      <mat-label>First Name</mat-label>
+      <input
+        matInput
+        formControlName="firstName"
+        placeholder="First Name"
+        required
+      />
+    </mat-form-field>
+
+    <!-- Last Name Field -->
+    <mat-form-field>
+      <mat-label>Last Name</mat-label>
+      <input
+        matInput
+        formControlName="lastName"
+        placeholder="Last Name"
+        required
+      />
+    </mat-form-field>
+
+    <!-- Middle Name Field -->
+    <mat-form-field>
+      <mat-label>Middle Name</mat-label>
+      <input matInput formControlName="middleName" placeholder="Middle Name" />
+    </mat-form-field>
+
+    <!-- Preferred Name Field -->
+    <mat-form-field>
+      <mat-label>Preferred Name</mat-label>
+      <input
+        matInput
+        formControlName="preferredName"
+        placeholder="Preferred Name"
+      />
+    </mat-form-field>
   </div>
 
   <!-- Profile Picture Upload -->
@@ -15,63 +48,114 @@
 
   <!-- Address -->
   <div formGroupName="address">
-    <input formControlName="building" placeholder="Building/Apt" />
-    <input formControlName="street" placeholder="Street Name" />
-    <input formControlName="city" placeholder="City" />
-    <input formControlName="state" placeholder="State" />
-    <input formControlName="zip" placeholder="Zip Code" />
+    <mat-form-field appearance="fill">
+      <mat-label>Building/Apt</mat-label>
+      <input matInput formControlName="building" placeholder="Building/Apt" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Street Name</mat-label>
+      <input matInput formControlName="street" placeholder="Street Name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>City</mat-label>
+      <input matInput formControlName="city" placeholder="City" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>State</mat-label>
+      <input matInput formControlName="state" placeholder="State" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Zip Code</mat-label>
+      <input matInput formControlName="zip" placeholder="Zip Code" />
+    </mat-form-field>
   </div>
 
   <!-- Phone Numbers -->
   <div formGroupName="phoneNumbers">
-    <input formControlName="cell" placeholder="Cell Phone Number" />
-    <input formControlName="work" placeholder="Work Phone Number" />
+    <mat-form-field>
+      <mat-label>Cell Phone Number</mat-label>
+      <input matInput formControlName="cell" placeholder="Cell Phone Number" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Work Phone Number</mat-label>
+      <input matInput formControlName="work" placeholder="Work Phone Number" />
+    </mat-form-field>
   </div>
 
   <!-- Car Information -->
   <div formGroupName="carInfo">
-    <input formControlName="make" placeholder="Car Make" />
-    <input formControlName="model" placeholder="Car Model" />
-    <input formControlName="color" placeholder="Car Color" />
+    <mat-form-field>
+      <mat-label>Car Make</mat-label>
+      <input matInput formControlName="make" placeholder="Car Make" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Car Model</mat-label>
+      <input matInput formControlName="model" placeholder="Car Model" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Car Color</mat-label>
+      <input matInput formControlName="color" placeholder="Car Color" />
+    </mat-form-field>
   </div>
 
   <!-- Email -->
-  <div>
-    <input formControlName="email" placeholder="Email" />
-  </div>
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" placeholder="Email" />
+  </mat-form-field>
 
   <!-- Personal Information -->
   <div formGroupName="personalInfo">
-    <input formControlName="ssn" placeholder="Social Security Number" />
-    <input type="date" formControlName="dob" placeholder="Date of Birth" />
-    <select formControlName="gender">
-      <option value="">Select Gender</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-      <option value="not_specified">I do not wish to answer</option>
-    </select>
+    <mat-form-field>
+      <mat-label>Social Security Number</mat-label>
+      <input
+        matInput
+        formControlName="ssn"
+        placeholder="Social Security Number"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Date of Birth</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="dob" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Gender</mat-label>
+      <mat-select formControlName="gender">
+        <mat-option value="male">Male</mat-option>
+        <mat-option value="female">Female</mat-option>
+        <mat-option value="not_specified">I do not wish to answer</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <!-- Citizenship Status -->
-  <div>
-    <p>Are you a citizen or permanent resident of the U.S?</p>
-    <select formControlName="citizenshipStatus">
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
-  </div>
+  <mat-form-field>
+    <mat-label>Are you a citizen or permanent resident of the U.S?</mat-label>
+    <mat-select formControlName="citizenshipStatus">
+      <mat-option value="Yes">Yes</mat-option>
+      <mat-option value="No">No</mat-option>
+    </mat-select>
+  </mat-form-field>
 
   <!-- Conditional Visa Details -->
   <div
     *ngIf="onboardingForm.get('citizenshipStatus')!.value === 'No'"
     formGroupName="visaDetails"
   >
-    <select formControlName="visaType">
-      <option value="">Select Visa Type</option>
-      <option value="">F1</option>
-      <option value="">H1B</option>
-    </select>
-    <!-- Conditional OPT Receipt Upload -->
+    <mat-form-field>
+      <mat-label>Select Visa Type</mat-label>
+      <mat-select formControlName="visaType">
+        <mat-option value="F1">F1</mat-option>
+        <mat-option value="H1B">H1B</mat-option>
+        <!-- ... other visa types -->
+      </mat-select>
+    </mat-form-field>
     <div
       *ngIf="
         onboardingForm.get('visaDetails.visaType')!.value === 'F1(CPT/OPT)'
@@ -79,31 +163,85 @@
     >
       <input type="file" (change)="onFileSelect($event, 'optReceipt')" />
     </div>
-    <input formControlName="visaTitle" placeholder="Visa Title" />
-    <input type="date" formControlName="startDate" placeholder="Start Date" />
-    <input type="date" formControlName="endDate" placeholder="End Date" />
+    <mat-form-field>
+      <mat-label>Visa Title</mat-label>
+      <input matInput formControlName="visaTitle" placeholder="Visa Title" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Start Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="startDatePicker"
+        formControlName="startDate"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="startDatePicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>End Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="endDatePicker"
+        formControlName="endDate"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="endDatePicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #endDatePicker></mat-datepicker>
+    </mat-form-field>
   </div>
 
   <!-- Driver's License -->
   <div formGroupName="driverLicense">
-    <label>
-      <input type="checkbox" formControlName="hasLicense" /> Do you have a
-      driver's license?
-    </label>
-    <input formControlName="licenseNumber" placeholder="License Number" />
-    <input
-      type="date"
-      formControlName="expirationDate"
-      placeholder="Expiration Date"
-    />
+    <mat-checkbox formControlName="hasLicense"
+      >Do you have a driver's license?</mat-checkbox
+    >
+    <mat-form-field>
+      <mat-label>License Number</mat-label>
+      <input
+        matInput
+        formControlName="licenseNumber"
+        placeholder="License Number"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Expiration Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="licenseExpPicker"
+        formControlName="expirationDate"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="licenseExpPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #licenseExpPicker></mat-datepicker>
+    </mat-form-field>
     <input type="file" (change)="onFileSelect($event, 'licenseCopy')" />
   </div>
 
   <!-- Reference -->
   <div formGroupName="reference">
-    <input formControlName="firstName" placeholder="Reference First Name" />
-    <input formControlName="lastName" placeholder="Reference Last Name" />
-    <!-- ... other reference fields -->
+    <mat-form-field>
+      <mat-label>Reference First Name</mat-label>
+      <input
+        matInput
+        formControlName="firstName"
+        placeholder="Reference First Name"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Reference Last Name</mat-label>
+      <input
+        matInput
+        formControlName="lastName"
+        placeholder="Reference Last Name"
+      />
+    </mat-form-field>
   </div>
 
   <!-- Emergency Contacts (Dynamic FormArray) -->
@@ -130,5 +268,5 @@
   </div> -->
 
   <!-- Submit Button -->
-  <button type="submit">Submit</button>
+  <button mat-raised-button type="submit">Submit</button>
 </form>

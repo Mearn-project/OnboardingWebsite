@@ -1,18 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-  FormArray,
-} from '@angular/forms';
-import { json } from 'stream/consumers';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 
 @Component({
-  selector: 'app-onboarding-application',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  selector: 'employee-onboarding-application',
   templateUrl: './onboarding-application.component.html',
   styleUrl: './onboarding-application.component.scss',
 })
@@ -22,10 +12,12 @@ export class OnboardingApplicationComponent {
 
   constructor(private fb: FormBuilder) {
     this.onboardingForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      middleName: [''],
-      preferredName: [''],
+      name: this.fb.group({
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        middleName: [''],
+        preferredName: [''],
+      }),
       profilePicture: [null], // Will be handled separately for file upload
       address: this.fb.group({
         building: [''],
@@ -72,7 +64,6 @@ export class OnboardingApplicationComponent {
         relationship: [''],
       }),
       emergencyContacts: this.fb.array([this.createEmergencyContact()]),
-      // ... other fields as needed
     });
   }
 
