@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const User = require('../models/User');
 const Application = require('../models/Application');
+const Visa = require('../models/Visa');
 
 const s3 = require('../utils/aws');
 
@@ -58,7 +59,7 @@ const submitApplication = async (req, res) => {
             const token = cookie.slice(6);
             userId = decodeToken(token);
         }
-        const user = await User.findById(userId).populate('application');
+        const user = await User.findById(userId);
 
         if (!user) {
             res.status(404).json({ message: 'User not found' });
@@ -66,10 +67,15 @@ const submitApplication = async (req, res) => {
 
         const application = new Application(applicationDetails);
         const savedApplication = await application.save();
+
+        const visa = new Visa({})
+        const savedVisa = await visa.save();
+
         user.application = savedApplication._id;
         user.applicationStatus = "Pending";
+        user.visa = savedVisa._id;
         await user.save();
-        const applicationId = savedApplication._id;
+        // const applicationId = savedApplication._id;
 
         res.status(201).json(user.application);
 
