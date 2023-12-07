@@ -1,26 +1,33 @@
 import { NgModule } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { NavigationComponent } from './components/navigation/navigation.component';
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { VisaStatusManagementComponent } from './components/visa-status-management/visa-status-management.component';
-import { HttpClientModule } from '@angular/common/http';
-
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { AppComponent } from './app.component';
+import { HrModule } from './hr/hr.module';
+import { loginReducer } from './store/login.reducer';
+import { LoginEffects } from './store/login.effects';
+import { RouterModule } from '@angular/router';
+import { AppRoutingModule } from './app-routing.module';
+import { SharedModule } from './share/share.module';
 
 @NgModule({
   declarations: [
-    NavigationComponent,
-    VisaStatusManagementComponent
+    AppComponent
+
   ],
   imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    HttpClientModule
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HrModule,
+    SharedModule,
+    // LoginComponent,
+    StoreModule.forRoot({ auth: loginReducer }),
+    EffectsModule.forRoot([LoginEffects]),
+    RouterModule,
   ],
+  providers: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

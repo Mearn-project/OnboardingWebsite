@@ -8,7 +8,7 @@ import { Employee } from '../models/employee.model';
   providedIn: 'root'
 })
 export class EmployeeService {
-  private apiBaseUrl = 'http://your-backend-api.com'; // 你的后端 API URL
+  private apiBaseUrl = 'http://backend-api.com';
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +16,6 @@ export class EmployeeService {
     return this.http.get<Employee[]>(`${this.apiBaseUrl}/employees`);
   }
 
-  // 根据搜索条件获取员工数据
   searchEmployees(query: string): Observable<Employee[]> {
     return this.http.get<Employee[]>(`${this.apiBaseUrl}/employees/search`, { params: { query } });
   }
