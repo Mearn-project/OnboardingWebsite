@@ -5,7 +5,7 @@ const Application = require("../models/Application");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, "../.env") });
+require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 const {
   generateToken,
   generateRegisterToken,
@@ -53,6 +53,7 @@ const getUserById = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const getUsersByName = async (req, res) => {
   try {
     const query = req.params.name;
@@ -333,6 +334,7 @@ const getVisaApprovedUsers = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const getVisaApprovedUsersByName = async (req, res) => {
   try {
     const query = req.params.name;
@@ -365,6 +367,7 @@ const getVisaApprovedUsersByName = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const getVisaNotApprovedUsers = async (req, res) => {
   try {
     // Fetch users with at least one visa field not set to "Approved"
@@ -573,6 +576,91 @@ const rejectVisaI20 = async (req, res) => {
   }
 };
 
+const getAllHouses = async (req, res) => {
+  try {
+    // Fetch all houses from MongoDB and populate references
+    const houses = await House.find().populate({
+      path: "residents facilityReports",
+      populate: {
+        path: "application", // Specify the field you want to populate
+        model: "User",
+      },
+    });
+    res.json(houses);
+  } catch (error) {
+    console.error("Error fetching houses:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const addCommentToReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const { description } = req.body;
+    const userId = req.user.id; // Assuming you have user information in req.user
+    // Check if reportId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(reportId)) {
+      return res.status(404).json({ error: "Invalid report ID" });
+    }
+    // Find the facility report by ID
+    const report = await FacilityReport.findById(reportId);
+    if (!report) {
+      return res.status(404).json({ error: "Facility report not found" });
+    }
+    // Add the comment to the report
+    report.comments.push({
+      description,
+      createdBy: userId,
+      timestamp: Date.now(),
+    });
+    // Save the updated report
+    await report.save();
+    res.status(200).json({ message: "Comment added successfully", report });
+  } catch (error) {
+    console.error("Error adding comment to report:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const addHouse = async (req, res) => {
+  try {
+    const { address, landlord } = req.body;
+    // Create a new house instance with the provided landlord information
+    const newHouse = new House({
+      address,
+      residents: [],
+      facilityReports: [],
+      landlord,
+    });
+    // Save the new house to the database
+    await newHouse.save();
+    res
+      .status(201)
+      .json({ message: "House added successfully", house: newHouse });
+  } catch (error) {
+    console.error("Error adding house:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+const deleteHouse = async (req, res) => {
+  try {
+    const houseId = req.params.houseId;
+    // Check if houseId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(houseId)) {
+      return res.status(404).json({ error: "Invalid house ID" });
+    }
+    // Find the house by ID and remove it
+    const deletedHouse = await House.findByIdAndRemove(houseId);
+    if (!deletedHouse) {
+      return res.status(404).json({ error: "House not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "House deleted successfully", deletedHouse });
+  } catch (error) {
+    console.error("Error deleting house:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   // Employee Profiles page
 
@@ -602,4 +690,10 @@ module.exports = {
   rejectVisaEAD,
   rejectVisaI983,
   rejectVisaI20,
+
+  //Housing Management page
+  getAllHouses,
+  addCommentToReport,
+  addHouse,
+  deleteHouse,
 };

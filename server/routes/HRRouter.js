@@ -28,6 +28,11 @@ const {
   rejectVisaEAD,
   rejectVisaI983,
   rejectVisaI20,
+  //Housing Management page
+  getAllHouses,
+  addCommentToReport,
+  addHouse,
+  deleteHouse,
 } = require("../controllers/HRController.js");
 const router = express.Router();
 
@@ -164,5 +169,19 @@ router.put(
 
 // Reject I-20 for a specific user, can set feedback in req body
 router.put("/visa/:visaId/reject/i20", jwtValidation, checkIsHR, rejectVisaI20);
+
+// get all houses
+router.get("/houses", jwtValidation, checkIsHR, getAllHouses);
+// add commit to a report
+router.post(
+  "/report/:reportId/comment",
+  jwtValidation,
+  checkIsHR,
+  addCommentToReport
+);
+// add a house
+router.post("/houses/add", jwtValidation, checkIsHR, addHouse);
+// Delete a house by ID
+router.delete("/houses/:houseId", jwtValidation, checkIsHR, deleteHouse);
 
 module.exports = router;
