@@ -1,5 +1,36 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+
+interface Application {
+  firstName: any;
+  lastName: any;
+  middleName: any;
+  preferredName: any;
+  profilePictureUrl: any;
+  address: any;
+  cellPhone: any;
+  workPhone: any;
+  carInformation: any;
+  email: any;
+  ssn: any;
+  dateOfBirth: any;
+  gender: any;
+  isUSCitizen: any;
+  workAuthorization: any;
+  // workAuthorizationUrl: uploadedFiles.find((file) => file.orginalname === 'workAuthorization')?.Location || '',
+  optReceiptUrl: any;
+  visaTitle: any;
+  startDate: any;
+  endDate: any;
+  hasDriverLicense: any;
+  licenseNumber: any;
+  licenseExpirationDate: any;
+  licenseCopyUrl: any;
+  reference: any;
+  emergencyContacts: any;
+  [key: string]: any;
+}
 
 @Component({
   selector: 'employee-onboarding-application',
@@ -10,7 +41,11 @@ export class OnboardingApplicationComponent {
   onboardingForm: FormGroup;
   isSubmitted = false; // Track if form is submitted
 
-  constructor(private fb: FormBuilder) {
+  selectedOptReceipt: File | null = null;
+  selectedProfilePicture: File | null = null;
+  selectedDriverLicense: File | null = null;
+
+  constructor(private fb: FormBuilder, private http: HttpClient) {
     this.onboardingForm = this.fb.group({
       name: this.fb.group({
         firstName: ['', Validators.required],
@@ -20,14 +55,14 @@ export class OnboardingApplicationComponent {
       }),
       profilePicture: [null], // Will be handled separately for file upload
       address: this.fb.group({
-        building: [''],
-        street: [''],
-        city: [''],
-        state: [''],
-        zip: [''],
+        buildingApt: ['', Validators.required],
+        street: ['', Validators.required],
+        city: ['', Validators.required],
+        state: ['', Validators.required],
+        zip: ['', Validators.required],
       }),
       phoneNumbers: this.fb.group({
-        cell: [''],
+        cell: ['', Validators.required],
         work: [''],
       }),
       carInfo: this.fb.group({
@@ -35,15 +70,15 @@ export class OnboardingApplicationComponent {
         model: [''],
         color: [''],
       }),
-      email: [''],
+      email: ['', Validators.required],
       personalInfo: this.fb.group({
-        ssn: [''],
-        dob: [''],
+        ssn: ['', Validators.required],
+        dob: ['', Validators.required],
         gender: [''],
       }),
-      citizenshipStatus: [''],
+      isUSCitizen: ['', Validators.required],
       visaDetails: this.fb.group({
-        visaType: [''],
+        visaType: [''], // workAuthorization
         optReceipt: [null], // File upload
         visaTitle: [''],
         startDate: [''],
@@ -88,12 +123,25 @@ export class OnboardingApplicationComponent {
   }
 
   // Method to handle file input changes
-  onFileSelect(event: Event, controlName: string): void {
-    console.log('Select file button pressed');
+  onFileSelect(event: Event, field: string): void {
+    // console.log('Select file button pressed');
     // const file = (event.target as HTMLInputElement).files[0];
     // if (file) {
     //   this.onboardingForm.get(controlName).setValue(file);
     // }
+    const inputElement = event.target as HTMLInputElement;
+
+    if (inputElement.files && inputElement.files.length > 0) {
+      const file = inputElement.files[0];
+      if (field === 'optReceipt') {
+        this.selectedOptReceipt = file;
+      } else if (field === 'licenseCopy') {
+        this.selectedDriverLicense = file;
+      } else if (field === 'profilePicture') {
+        this.selectedProfilePicture = file;
+      }
+      // Handle other fields if needed
+    }
   }
 
   // Method to submit the form
@@ -105,7 +153,61 @@ export class OnboardingApplicationComponent {
       return;
     }
     // TODO: Send the form data to server
-    console.log('Form submitted raw', this.onboardingForm.value);
-    // console.log('Form submitted');
+    // console.log('Form submitted raw', this.onboardingForm.value);
+    const application = this.onboardingForm.value;
+    const formData = new FormData();
+
+    const fieldsToAppend = [
+      { name: 'firstName', value: application.name.firstName },
+      { name: 'lastName', value: application.name.lastName },
+      { name: 'middleName', value: application.name.middleName || '' },
+      { name: 'preferredName', value: application.name.preferredName || '' },
+      { name: 'profilePicture', value: this.selectedProfilePicture || '' },
+      { name: 'address', value: JSON.stringify(application.address)},
+      { name: 'cellPhone', value: application.phoneNumbers.cell },
+      { name: 'workPhone', value: application.phoneNumbers.work || '' },
+      { name: 'carInformation', value: JSON.stringify(application.carInfo || { make: '', model: '', color: '' }) },
+      { name: 'email', value: application.email },
+      { name: 'ssn', value: application.personalInfo.ssn },
+      { name: 'dateOfBirth', value: application.personalInfo.dob },
+      { name: 'gender', value: application.personalInfo.gender || 'I do not wish to answer' },
+      { name: 'isUSCitizen', value: application.isUSCitizen === 'Yes' ? 'true' : 'false' },
+      { name: 'workAuthorization', value: application.visaDetails.visaType || 'Citizen' },
+      { name: 'optReceipt', value: this.selectedOptReceipt || '' },
+      { name: 'visaTitle', value: application.visaDetails.visaTitle || '' },
+      { name: 'startDate', value: application.visaDetails.startDate || '' },
+      { name: 'endDate', value: application.visaDetails.endDate || '' },
+      { name: 'hasDriverLicense', value: application.driverLicense.hasDriverLicense === 'Yes' ? 'true' : 'false' },
+      { name: 'licenseNumber', value: application.driverLicense.licenseNumber || '' },
+      { name: 'licenseExpirationDate', value: application.driverLicense.licenseExpirationDate || '' },
+      { name: 'licenseCopy', value: this.selectedDriverLicense || '' },
+      { name: 'reference', value: JSON.stringify(application.reference || {
+        email: '',
+        firstName: '',
+        lastName: '',
+        middleName: '',
+        phone: '',
+        relationship: ''
+      }) },
+      { name: 'emergencyContacts', value: JSON.stringify(application.emergencyContacts || []) }
+    ];
+  
+    for (const field of fieldsToAppend) {
+      formData.append(field.name, field.value);
+    }
+
+    // console.log(application.profilePicture)
+
+    // formData.append('applicationData', formData);
+    // console.log(formData)
+    this.http.post('http://localhost:3000/application', formData)
+      .subscribe({
+        next: (response) => {
+          console.log('Application submitted successfully:', response);
+        },
+        error: (error) => {
+          console.error('Error submitting application:', error);
+        }
+      })
   }
 }

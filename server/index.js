@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const app = require('./server');
 
-
+// need to change .env path
 require("dotenv").config({path: path.join(__dirname, '../.env')});
 
 const port = process.env.PORT || 3000;

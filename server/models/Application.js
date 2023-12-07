@@ -12,14 +12,14 @@ const ApplicationSchema = new mongoose.Schema({
         required: true
     },
     middleName: String,
-    preferedName: String,
+    preferredName: String,
     profilePictureUrl: String,
-    currentAddress: {
+    address: {
         buildingApt: {
             type: String,
             required: true
         },
-        streetName: {
+        street: {
             type: String,
             required: true
         },
@@ -55,7 +55,7 @@ const ApplicationSchema = new mongoose.Schema({
         required: true
     },
     dateOfBirth: {
-        type: Date,
+        type: String,
         required: true
     },
     gender: {
@@ -69,50 +69,51 @@ const ApplicationSchema = new mongoose.Schema({
     workAuthorization: {
         type: String,
         enum: ['Green Card', 'Citizen', 'H1-B', 'L2', 'F1(CPT/OPT)', 'H4', 'Other'],
-        required: true
+        // required: true
+        default: "Citizen"
     },
-    workAuthorizationUrl: String,
+    // workAuthorizationUrl: String,
     optReceiptUrl: String,
     visaTitle: String,
-    startDate: Date,
-    endDate: Date,
+    startDate: String,
+    endDate: String,
     hasDriverLicense: {
         type: Boolean,
         required: true
     },
     licenseNumber: {
         type: String,
-        required: true
+        // required: true
     },
     licenseExpirationDate: {
-        type: Date,
-        required: true
+        type: String,
+        // required: true
     },
     licenseCopyUrl: {
         type: String,
-        required: true
+        // required: true
     },
     reference: {
         firstName: {
             type: String,
-            required: true
+            // required: true
         },
         lastName: {
             type: String,
-            required: true
+            // required: true
         },
         middleName: String,
         phone: {
             type: String,
-            required: true
+            // required: true
         },
         email: {
             type: String,
-            required: true
+            // required: true
         },
         relationship: {
             type: String,
-            required: true
+            // required: true
         }
     },
     emergencyContacts: [

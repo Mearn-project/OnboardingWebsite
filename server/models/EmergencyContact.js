@@ -3,24 +3,24 @@ const mongoose = require('mongoose');
 const EmergencyContactSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true
+        // required: true
     },
     lastName: {
         type: String,
-        required: true
+        // required: true
     },
     middleName: String,
     phone: {
         type: String,
-        required: true
+        // required: true
     },
     email: {
         type: String,
-        required: true
+        // required: true
     },
     relationship: {
         type: String,
-        required: true
+        // required: true
     }
 })
 

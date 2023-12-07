@@ -1,0 +1,18 @@
+<p>facility-report works!</p>
+<mat-card>
+    <mat-card-content>
+        <mat-form-field>
+            <input matInput placeholder="Title" [(ngModel)]="title" />
+        </mat-form-field>
+        <mat-form-field>
+            <textarea 
+                matInput
+                placeholder="Description"
+                [(ngModel)]="description"
+                ></textarea>
+        </mat-form-field>
+        <mat-card-actions>
+            <button mat-button (click)="submitFacilityReport()">Submit</button>
+        </mat-card-actions>
+    </mat-card-content>
+</mat-card>
