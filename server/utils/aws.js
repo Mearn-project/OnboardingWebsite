@@ -9,10 +9,10 @@ const AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
 
 AWS.config.update({
     accessKeyId: AWS_ACCESS_KEY,
-    secretAccessKey: AWS_ACCESS_KEY,
+    secretAccessKey: AWS_SECRET_KEY,
     region: 'us-east-2'
   });
 
 const s3 = new AWS.S3();
 
-module.exports = s3;
+module.exports = s3;gi
