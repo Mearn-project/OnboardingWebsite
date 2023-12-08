@@ -178,7 +178,7 @@ const updateComment = async (req, res) => {
             userId = decodeToken(token);
         }
 
-        const facilityReport = await FacilityReport.findById(facilityReportId);
+        const facilityReport = await FacilityReport.findById(facilityReportId).populate('comments');
 
         if(!facilityReport) {
             return res.status(404).json({ message: 'Facility report not found' });

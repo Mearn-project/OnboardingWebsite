@@ -70,7 +70,6 @@ const submitApplication = async (req, res) => {
 				const file = files[key][0];
 				// console.log(file)
 
-				// return new Promise(async (resolve, reject) => { 
 				const fileName = file.fieldname;
 				if (fileName === 'optReceiptUrl') {
 
