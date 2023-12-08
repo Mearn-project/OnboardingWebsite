@@ -4,6 +4,7 @@ const HouseSchema = new mongoose.Schema({
   address: {
     type: String,
     required: true,
+    unique: true
   },
   residents: [
     {
