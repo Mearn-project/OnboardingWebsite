@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { createFacilityReport, getUserFacilityReports, addComment, getComments, getHousingDetails, updateComment } = require('../controllers/HousingController');
+const { createFacilityReport, getUserFacilityReports, addComment, getHousingDetails, updateComment } = require('../controllers/HousingController');
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.get('/users/:userId/facility-reports', getUserFacilityReports);
 
 router.post('/facility-reports/:facilityReportId/comments', addComment)
 
-router.get('/facility-reports/:facilityReportId/comments', getComments)
+// router.get('/facility-reports/:facilityReportId/comments', getComments)
 
 // shoud have one route for update comment
 router.patch('/facility-reports/:facilityReportId/comments/:commentId', updateComment);

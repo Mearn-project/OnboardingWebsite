@@ -25,10 +25,12 @@
                         <p>{{ comment.description }}</p>
                         <p>Posted By: {{ comment.createdBy }}</p>
                         <p>Timestamp: {{ comment.timestamp }}</p>
+                        <!-- update comment -->
+                        <button (click)="updateComment(comment._id)">Update</button>
                     </li>
                 </ul>
             </div>
-            <form (ngSubmit)="submitComment(report._id)">
+            <form (ngSubmit)="addComment(report._id)">
                 <input type="text" [(ngModel)]="newComment" placeholder="Add a comment" required>
                 <button type="submit">Submit</button>
             </form>
