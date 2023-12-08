@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Email = require("../models/Email");
 const Visa = require("../models/Visa");
+const House = require("../models/House");
 const Application = require("../models/Application");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
@@ -319,10 +320,7 @@ const getVisaApprovedUsers = async (req, res) => {
   try {
     // Fetch users with all visa fields set to "Approved"
     const users = await User.find({
-      "visa.optReceipt.status": "Approved",
-      "visa.optEAD.status": "Approved",
-      "visa.i983.status": "Approved",
-      "visa.i20.status": "Approved",
+      visaStatus: "Approved",
     })
       .populate("visa")
       .populate("application");
@@ -350,12 +348,7 @@ const getVisaApprovedUsersByName = async (req, res) => {
           ],
         },
         { visa: { $ne: null } }, // Ensure visa is not null
-        {
-          "visa.optReceipt.status": "Approved",
-          "visa.optEAD.status": "Approved",
-          "visa.i983.status": "Approved",
-          "visa.i20.status": "Approved",
-        },
+        { visaStatus: "Approved" },
       ],
     })
       .populate("application")
@@ -370,14 +363,9 @@ const getVisaApprovedUsersByName = async (req, res) => {
 
 const getVisaNotApprovedUsers = async (req, res) => {
   try {
-    // Fetch users with at least one visa field not set to "Approved"
+    // Fetch users with visaStatus not set to "Approved"
     const users = await User.find({
-      $or: [
-        { "visa.optReceipt.status": { $ne: "Approved" } },
-        { "visa.optEAD.status": { $ne: "Approved" } },
-        { "visa.i983.status": { $ne: "Approved" } },
-        { "visa.i20.status": { $ne: "Approved" } },
-      ],
+      $or: [{ visaStatus: { $ne: "Approved" } }],
       visa: { $exists: true, $ne: null },
     })
       .populate("visa") // Populate the 'visa' field to get the complete visa information
@@ -481,9 +469,19 @@ const approveVisaI20 = async (req, res) => {
       return res.status(404).json({ error: "Visa not found" });
     }
 
+    // Update the status of i20 in the visa
     visa.i20.status = "Approved";
 
+    // Save the changes to the visa
     await visa.save();
+
+    // If i20 is approved, update user's visaStatus to "Approved"
+    const user = await User.findOne({ visa: visaId });
+
+    if (user) {
+      user.visaStatus = "Approved";
+      await user.save();
+    }
 
     res.status(200).json({ message: "Visa I-20 approved successfully" });
   } catch (error) {
@@ -643,15 +641,19 @@ const addHouse = async (req, res) => {
 const deleteHouse = async (req, res) => {
   try {
     const houseId = req.params.houseId;
+
     // Check if houseId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(houseId)) {
       return res.status(404).json({ error: "Invalid house ID" });
     }
+
     // Find the house by ID and remove it
-    const deletedHouse = await House.findByIdAndRemove(houseId);
+    const deletedHouse = await House.findByIdAndDelete(houseId);
+
     if (!deletedHouse) {
       return res.status(404).json({ error: "House not found" });
     }
+
     res
       .status(200)
       .json({ message: "House deleted successfully", deletedHouse });
