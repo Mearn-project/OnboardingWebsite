@@ -35,7 +35,6 @@ const {
   deleteHouse,
 } = require("../controllers/HRController.js");
 const router = express.Router();
-
 // return a list of all approved users
 router.get("/", jwtValidation, checkIsHR, getUsers);
 // return one user with specified userId
@@ -43,10 +42,8 @@ router.get("/id/:userId", jwtValidation, checkIsHR, getUserById);
 // case-insensitive search within approved users,
 // return a list of users with matched name(first or last or preferd name)
 router.get("/name/:name", jwtValidation, checkIsHR, getUsersByName);
-
 // router.get("/visa/inProgress", getInProgressUsers);
 // router.get("/visa/approved", getApprovedUsers);
-
 // HR generate a token and send email to an email address(in req body) to allow user to register
 router.post("/register", jwtValidation, checkIsHR, sendEmail);
 // get all HR sent emails (with status registered or unregistered)
@@ -93,10 +90,8 @@ router.put(
   checkIsHR,
   rejectApplication
 );
-
 // Get all users with approved visa
 router.get("/visa/approved", jwtValidation, checkIsHR, getVisaApprovedUsers);
-
 // case-insensitive search within visa-approved users,
 // return a list of users with matched name(first or last or preferd name)
 router.get(
@@ -112,10 +107,8 @@ router.get(
   checkIsHR,
   getVisaNotApprovedUsers
 );
-
 // Get visa details for a specific user
-router.get("/visa/:userId", jwtValidation, checkIsHR, getVisaById);
-
+router.get("/visa/:visaId", jwtValidation, checkIsHR, getVisaById);
 // Approve OPT Receipt for a specific user
 router.put(
   "/visa/:visaId/approve/optReceipt",
@@ -123,7 +116,6 @@ router.put(
   checkIsHR,
   approveVisaOPTReceipt
 );
-
 // Approve EAD for a specific user
 router.put(
   "/visa/:visaId/approve/ead",
@@ -131,7 +123,6 @@ router.put(
   checkIsHR,
   approveVisaEAD
 );
-
 // Approve I-983 for a specific user
 router.put(
   "/visa/:visaId/approve/i983",
@@ -139,7 +130,6 @@ router.put(
   checkIsHR,
   approveVisaI983
 );
-
 // Approve I-20 for a specific user
 router.put(
   "/visa/:visaId/approve/i20",
@@ -147,7 +137,6 @@ router.put(
   checkIsHR,
   approveVisaI20
 );
-
 // Reject OPT Receipt for a specific user, can set feedback in req body
 router.put(
   "/visa/:visaId/reject/optReceipt",
@@ -155,10 +144,8 @@ router.put(
   checkIsHR,
   rejectVisaOPTReceipt
 );
-
 // Reject EAD for a specific user, can set feedback in req body
 router.put("/visa/:visaId/reject/ead", jwtValidation, checkIsHR, rejectVisaEAD);
-
 // Reject I-983 for a specific user, can set feedback in req body
 router.put(
   "/visa/:visaId/reject/i983",
@@ -166,10 +153,8 @@ router.put(
   checkIsHR,
   rejectVisaI983
 );
-
 // Reject I-20 for a specific user, can set feedback in req body
 router.put("/visa/:visaId/reject/i20", jwtValidation, checkIsHR, rejectVisaI20);
-
 // get all houses
 router.get("/houses", jwtValidation, checkIsHR, getAllHouses);
 // add commit to a report
@@ -183,5 +168,4 @@ router.post(
 router.post("/houses/add", jwtValidation, checkIsHR, addHouse);
 // Delete a house by ID
 router.delete("/houses/:houseId", jwtValidation, checkIsHR, deleteHouse);
-
 module.exports = router;
