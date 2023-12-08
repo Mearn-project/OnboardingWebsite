@@ -24,14 +24,15 @@ router.route('/register/:token')
 
 router.route('/register/complete')
     .post(createUserValidation, register)
-    
+
 
 router.route('/login')
     .post(loginUserValidation, login)
     // .get((req, res) => {
     //     res.render('login/index')
     // })
-    
+
+
 
 router.get('/logout', logout)
 
@@ -47,7 +48,7 @@ router.get('/logout', logout)
 //         })
 
 //     } else {
-//         res.render('index', { 
+//         res.render('index', {
 //             isLoggedIn: false,
 //         });
 //     }

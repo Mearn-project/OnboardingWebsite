@@ -15,6 +15,8 @@ import { AppState } from '../../store/app.state';
 })
 
 export class LoginComponent implements OnInit, OnDestroy {
+
+  private isHR: boolean = false;
   username: string = '';
   password: string = '';
   loginError: boolean = false;
@@ -27,13 +29,12 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(authState => {
         if (authState.token) {
-          // 登录成功
+          this.isHR = authState.isHR;
           this.showDialog();
         }
         if (authState.error) {
-          // 登录失败处理
           this.loginError = true;
-          console.error('登录失败', authState.error);
+          console.error('login failure', authState.error);
         }
       });
   }
@@ -51,11 +52,16 @@ export class LoginComponent implements OnInit, OnDestroy {
   showDialog() {
     const dialogRef = this.dialog.open(DialogContentComponent);
 
-    dialogRef.afterOpened().subscribe(() => {
-      setTimeout(() => {
-        dialogRef.close();
-        this.router.navigate(['/employee-profiles']);
-      }, 3000);
+    setTimeout(() => {
+      dialogRef.close();
+    }, 1000);
+
+    dialogRef.afterClosed().subscribe(() => {
+      if (this.isHR) {
+        this.router.navigate(['/hr-home']);
+      } else {
+        this.router.navigate(['/employee']);
+      }
     });
   }
 }

@@ -1,7 +1,8 @@
-// visa-status.service.ts
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.state';
 import { environment } from '../../environments/environment';
 import { VisaStatus } from '../models/visa-status.model';
 
@@ -10,29 +11,46 @@ import { VisaStatus } from '../models/visa-status.model';
 })
 
 export class VisaStatusService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'http://localhost:3000/api/HR';
+  private token: string | null = null;
 
-  constructor(private http: HttpClient) {
-    this.apiUrl = environment.apiUrl;
+  constructor(private http: HttpClient, private store: Store<AppState>) {
+    this.store.select('auth').subscribe(authState => {
+      this.token = authState.token;
+    });
   }
 
-  getInProgressVisaStatuses() {
-    return this.http.get<VisaStatus[]>(`${this.apiUrl}/api/visa-status/in-progress`);
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
   }
 
-  getAllVisaStatuses() {
-    return this.http.get<VisaStatus[]>(`${this.apiUrl}/api/visa-status/all`);
+// visa-status.service.ts
+
+getInProgressVisaStatuses(): Observable<VisaStatus[]> {
+  return this.http.get<{ users: VisaStatus[] }>(`${this.apiUrl}/visa/not-approved`, { headers: this.getHeaders() })
+    .pipe(map(response => response.users));
+}
+
+getAllVisaStatuses(): Observable<VisaStatus[]> {
+  return this.http.get<{ users: VisaStatus[] }>(`${this.apiUrl}/visa/approved`, { headers: this.getHeaders() })
+    .pipe(map(response => response.users));
+}
+
+
+  getVisaById(userId: string): Observable<VisaStatus> {
+    return this.http.get<VisaStatus>(`${this.apiUrl}/visa/${userId}`, { headers: this.getHeaders() });
   }
 
-  approveDocument(employeeId: number, documentId: number) {
-    return this.http.post<VisaStatus[]>(`${this.apiUrl}/api/visa-status/approve/${employeeId}/${documentId}`, {});
+  approveDocument(visaId: string, documentType: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/visa/${visaId}/approve/${documentType}`, {}, { headers: this.getHeaders() });
   }
 
-  rejectDocument(employeeId: number, documentId: number, feedback: string) {
-    return this.http.post<VisaStatus[]>(`${this.apiUrl}/api/visa-status/reject/${employeeId}/${documentId}`, { feedback });
+  rejectDocument(visaId: string, documentType: string, feedback: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/visa/${visaId}/reject/${documentType}`, { feedback }, { headers: this.getHeaders() });
   }
 
-  sendNotification(employeeId: number) {
-    return this.http.post<VisaStatus[]>(`${this.apiUrl}/api/visa-status/notify/${employeeId}`, {});
+  sendNotification(emailAddress: string): Observable<any> {
+    const emailData = { email: emailAddress };
+    return this.http.post(`${this.apiUrl}/register`, emailData, { headers: this.getHeaders() });
   }
 }

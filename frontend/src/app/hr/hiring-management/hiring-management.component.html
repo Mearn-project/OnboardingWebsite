@@ -1,31 +1,36 @@
-<div>
-  <button (click)="generateToken()">Generate token and send email</button>
+<app-navigation></app-navigation>
+<div class="hiring-management-container">
+  <button mat-raised-button color="primary" (click)="openTokenModal()">Generate token and send email</button>
 
-  <!-- 令牌历史记录表格 -->
-  <table>
-    <tr>
-      <th>Email Address</th>
-      <th>Person's Name</th>
-      <th>Registration Link</th>
-      <th>Status</th>
-    </tr>
-    <tr *ngFor="let token of tokens">
-      <td>{{ token.email }}</td>
-      <td>{{ token.name }}</td>
-      <td>{{ token.link }}</td>
-      <td>{{ token.status }}</td>
-    </tr>
-  </table>
+  <mat-table #tokenTable class="mat-elevation-z8" [dataSource]="tokens">
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef>Email Address</mat-header-cell>
+      <mat-cell *matCellDef="let token">{{ token.email }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+      <mat-cell *matCellDef="let token">{{ token.status }}</mat-cell>
+    </ng-container>
 
-  <!-- 在职培训申请审查 -->
-  <div *ngFor="let application of applications">
-    <div *ngIf="application.status === 'pending'">
-      <h3>{{ application.fullName }}</h3>
-      <p>{{ application.email }}</p>
-      <button (click)="viewApplication(application.id)">View Application</button>
-      <button (click)="approveApplication(application.id)">Approve</button>
-      <button (click)="rejectApplication(application.id)">Reject</button>
-    </div>
-    <!-- 处理其他状态的申请 -->
+    <mat-header-row *matHeaderRowDef="['email', 'status']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['email', 'status'];"></mat-row>
+  </mat-table>
+
+  <div *ngFor="let application of applications" class="application-card">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ application.fullName }}</mat-card-title>
+        <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        Application Status: {{ application.status }}
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="viewApplication(application.id)">View Application</button>
+        <button mat-button *ngIf="application.status === 'pending'" (click)="approveApplication(application.id)">Approve</button>
+        <button mat-button *ngIf="application.status === 'pending'" (click)="rejectApplication(application.id, 'Your feedback')">Reject</button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>
+

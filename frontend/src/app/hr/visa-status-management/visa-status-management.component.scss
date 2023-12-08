@@ -1,8 +1,15 @@
-/* visa-status-management.component.scss */
 .visa-status-management {
-  // 页面样式
-}
+  .mat-form-field {
+    width: 100%;
+    margin-bottom: 20px;
+  }
 
-.mat-form-field {
-  width: 100%;
+  mat-table {
+    width: 100%;
+    margin-top: 20px;
+
+    mat-header-cell, mat-cell {
+      padding: 8px;
+    }
+  }
 }

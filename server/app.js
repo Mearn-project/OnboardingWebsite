@@ -9,7 +9,7 @@ const app = express();
 // enable cors
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: "http://localhost:3000",
     credentials: true, // enable cookies for cors
   })
 );

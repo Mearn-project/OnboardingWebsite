@@ -11,7 +11,7 @@ AWS.config.update({
     accessKeyId: AWS_ACCESS_KEY,
     secretAccessKey: AWS_SECRET_KEY,
     region: 'us-east-2'
-})
+  });
 
 const s3 = new AWS.S3();
 

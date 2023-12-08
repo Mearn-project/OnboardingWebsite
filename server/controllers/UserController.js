@@ -27,7 +27,10 @@ const login = async (req, res) => {
         const token = generateToken(user._id);
         res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
 
-        return res.status(200).json({ token });
+        return res.status(200).json({
+            token: token,
+            isHR: user.isHR
+        });
     } catch (error) {
         console.error('Failed to login:', error);
         return res.status(500).json({ message: error.message });
@@ -77,9 +80,9 @@ const sendEmail = async (req, res) => {
 
 const register = async (req, res) => {
     const { username, email, password, confirmPwd} = req.body;
- 
+
     try {
-        const existingUsername = await User.findOne({username}); 
+        const existingUsername = await User.findOne({username});
         const existingEmail = await User.findOne({email});
         if (existingUsername || existingEmail) {
             return res.status(409).json({ message: 'User already exists'});
@@ -103,7 +106,7 @@ const register = async (req, res) => {
         console.error('Failed to register:', error);
         return res.status(500).json({ message: error.message });
     }
-    
+
 };
 
 const verifyRegistrationToken = async (req, res, next) => {
@@ -130,7 +133,7 @@ const verifyRegistrationToken = async (req, res, next) => {
 const logout = (_req, res) => {
     try {
         res.clearCookie('token');
-        res.redirect('/');
+        res.status(200).json({ message: 'Logged out successfully' });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: error.message });
@@ -138,7 +141,7 @@ const logout = (_req, res) => {
 };
 
 const isHR = async (userId) => {
-    
+
     try {
         const user = await User.findById(userId);
         if (user.isHR) {

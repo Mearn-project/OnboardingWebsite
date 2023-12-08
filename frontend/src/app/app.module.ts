@@ -6,6 +6,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { AppComponent } from './app.component';
 import { HrModule } from './hr/hr.module';
 import { loginReducer } from './store/login.reducer';
+
 import { LoginEffects } from './store/login.effects';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
@@ -22,7 +23,6 @@ import { SharedModule } from './share/share.module';
     BrowserAnimationsModule,
     HrModule,
     SharedModule,
-    // LoginComponent,
     StoreModule.forRoot({ auth: loginReducer }),
     EffectsModule.forRoot([LoginEffects]),
     RouterModule,

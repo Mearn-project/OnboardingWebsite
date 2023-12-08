@@ -7,31 +7,30 @@ import { Employee } from '../../models/employee.model';
   templateUrl: './employee-profiles.component.html',
   styleUrls: ['./employee-profiles.component.scss']
 })
-export class NavigationComponent {
-}
 
 export class EmployeeProfilesComponent implements OnInit {
   employees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
+
 
   constructor(private employeeService: EmployeeService) {}
 
   ngOnInit(): void {
-    this.loadEmployees();
-  }
-
-  loadEmployees() {
-    this.employeeService.getEmployees().subscribe(data => {
-      this.employees = data;
+    this.employeeService.getEmployees().subscribe(employees => {
+      console.log(employees)
+      this.employees = employees;
+      this.filteredEmployees = employees;
     });
   }
 
-  search(query: string) {
-    if (query) {
-      this.employeeService.searchEmployees(query).subscribe(data => {
-        this.employees = data;
-      });
+  search(event: Event): void {
+    const term = (event.target as HTMLInputElement).value;
+    if (!term) {
+      this.filteredEmployees = this.employees;
     } else {
-      this.loadEmployees();
+      this.employeeService.getEmployeesByName(term).subscribe(employees => {
+        this.filteredEmployees = employees;
+      });
     }
   }
 }

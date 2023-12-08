@@ -22,19 +22,8 @@ const FacilityReportSchema = new mongoose.Schema({
     },
     comments: [
         {
-            description: {
-                type: String,
-                required: true,
-            },
-            createdBy: {
-                type: refType,
-                ref: 'User',
-                required: true,
-            },
-            timestamp: {
-                type: Date,
-                default: Date.now
-            }
+            type: refType,
+            ref: 'Comment'
         }
     ],
     timestamp: {

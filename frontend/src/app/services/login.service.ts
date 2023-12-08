@@ -9,12 +9,16 @@ import { Observable } from 'rxjs';
 })
 export class LoginService {
 
-  private apiUrl = environment.apiUrl + '/user/login';
+  private apiUrl = 'http://localhost:3000/api/user';
 
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<any>('http://localhost:3000/user/login', { username, password });
+    return this.http.post<any>(`${this.apiUrl}/login`, { username, password });
+  }
+
+  logout(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/logout`);
   }
 
 }

@@ -1,16 +1,65 @@
-<div>
-  <button (click)="addHouse()">Add New House</button>
+<app-navigation></app-navigation>
+<div class="housing-management-container">
+  <button mat-raised-button color="primary" (click)="addHouse()">Add New House</button>
 
-  <table>
-    <tr *ngFor="let house of houses">
-      <td>{{ house.address }}</td>
-      <td>{{ house.landlord.fullName }}</td>
-      <td>{{ house.landlord.phoneNumber }}</td>
-      <td>{{ house.landlord.email }}</td>
-      <td>{{ house.numberOfResidents }}</td>
-      <td><button (click)="viewDetails(house.id)">View Details</button></td>
-      <td><button (click)="deleteHouse(house.id)">Delete</button></td>
-    </tr>
-  </table>
+  <mat-table #housesTable class="mat-elevation-z8" [dataSource]="houses">
+    <ng-container matColumnDef="address">
+      <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
+      <mat-cell *matCellDef="let house">{{ house.address }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="landlord">
+      <mat-header-cell *matHeaderCellDef>Landlord</mat-header-cell>
+      <mat-cell *matCellDef="let house">{{ house.landlord.fullName }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="landlordPhone">
+      <mat-header-cell *matHeaderCellDef>Landlord Phone</mat-header-cell>
+      <mat-cell *matCellDef="let house">{{ house.landlord.phoneNumber }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="landlordEmail">
+      <mat-header-cell *matHeaderCellDef>Landlord Email</mat-header-cell>
+      <mat-cell *matCellDef="let house">{{ house.landlord.email }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="residents">
+      <mat-header-cell *matHeaderCellDef>Residents</mat-header-cell>
+      <mat-cell *matCellDef="let house">{{ house.numberOfResidents }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let house">
+        <button mat-button (click)="viewDetails(house.id)">View Details</button>
+        <button mat-button color="warn" (click)="deleteHouse(house.id)">Delete</button>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let house">
+        <button mat-button (click)="viewDetails(house.id)">View Details</button>
+        <button mat-button color="warn" (click)="deleteHouse(house.id)">Delete</button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="['address', 'landlord', 'landlordPhone', 'landlordEmail', 'residents', 'actions']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['address', 'landlord', 'landlordPhone', 'landlordEmail', 'residents', 'actions'];"></mat-row>
+  </mat-table>
+  <div *ngFor="let report of reports">
+    <h3>{{ report.title }}</h3>
+    <p>{{ report.description }}</p>
+    <p>Created by: {{ report.createdBy }} on {{ report.timestamp | date }}</p>
+    <p>Status: {{ report.status }}</p>
+    <button mat-button (click)="report.id && addComment(report.id, 'Your comment here')">Add Comment</button>
+
+    <div *ngFor="let commentId of report.comments">
+      <div *ngIf="getCommentById(commentId)">
+        <p>{{ getCommentById(commentId)?.description }}</p>
+      <p>Commented by: {{ getCommentById(commentId)?.createdBy }}</p>
+      <button mat-button (click)="report.id && updateComment(report.id, commentId, 'Updated comment')">Edit Comment</button>
+        </div>
+    </div>
+  </div>
 </div>
-

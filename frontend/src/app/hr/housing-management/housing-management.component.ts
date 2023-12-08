@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HousingService } from '../../services/housing.service';
+import { FacilityReport } from '../../models/facility-report.model';
+import { Comment } from '../../models/comment.model';
+import { House } from '../../models/house.model';
 
 @Component({
   selector: 'app-housing-management',
@@ -7,7 +10,9 @@ import { HousingService } from '../../services/housing.service';
   styleUrls: ['./housing-management.component.scss']
 })
 export class HousingManagementComponent implements OnInit {
-  houses: any[] = []; // 房屋数据
+  houses: House[] = [];
+  reports: FacilityReport[] = [];
+  comments: Comment[] = [];
 
   constructor(private housingService: HousingService) {}
 
@@ -16,18 +21,58 @@ export class HousingManagementComponent implements OnInit {
   }
 
   loadHouses() {
-    // 加载房屋数据
+    this.housingService.getHousingDetails()
+      .subscribe(houses => {
+        this.houses = houses.map(house => new House(house));
+      });
   }
 
   addHouse() {
-    // 添加房屋
   }
 
-  viewDetails(houseId: number) {
-    // 查看房屋详细信息
+  viewDetails(houseId: string) {
   }
 
-  deleteHouse(houseId: number) {
-    // 删除房屋
+  deleteHouse(houseId: string) {
+  }
+
+  loadFacilityReports(houseId: string) {
+    this.housingService.getUserFacilityReports(houseId)
+      .subscribe(reports => {
+        this.reports = reports.map(report => new FacilityReport(report));
+      });
+  }
+
+  createReport(reportData: FacilityReport) {
+    this.housingService.createFacilityReport(reportData)
+      .subscribe(newReport => {
+        this.reports.push(new FacilityReport(newReport));
+      });
+  }
+
+  getComment() {
+  }
+
+  getCommentById(commentId: string): Comment | undefined {
+    return this.comments.find(comment => comment.id === commentId);
+  }
+
+  addComment(reportId: string, commentData: string) {
+    const newComment = new Comment({ description: commentData, createdBy: 'currentUserId' });
+    this.housingService.addCommentToReport(reportId, newComment)
+      .subscribe(addedComment => {
+        const report = this.reports.find(r => r.id === reportId);
+        if (report) {
+          report.comments?.push(addedComment.id!);
+        }
+      });
+  }
+
+  updateComment(reportId: string, commentId: string, commentData: string) {
+    const updatedComment = new Comment({ id: commentId, description: commentData, createdBy: 'currentUserId' });
+    this.housingService.updateComment(reportId, commentId, updatedComment)
+      .subscribe(updatedComment => {
+        // Logic to update comment in the reports array
+      });
   }
 }
