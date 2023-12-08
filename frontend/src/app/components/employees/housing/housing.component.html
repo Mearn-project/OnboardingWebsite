@@ -1,0 +1,39 @@
+<p>housing works!</p>
+<div *ngIf="house">
+    <h2>{{ house.address }}</h2>
+    <h3>Roomates:</h3>
+    <ul>
+        <li *ngFor="let roommate of roommates">
+            {{ roommate.name }} - {{ roommate.phone }}
+        </li>
+    </ul>
+</div>
+
+<div *ngIf="facilityReports.length > 0">
+    <h3>Facility Reports:</h3>
+    <ul>
+        <li *ngFor="let report of facilityReports">
+            <h4>{{ report.title }}</h4>
+            <p>Description: {{ report.description }}</p>
+            <p>Created By: {{ report.createdBy }}</p>
+            <p>Timestamp: {{ report.timestamp }}</p>
+            <p>Status: {{ report.status }}</p>
+            <div *ngIf="report.comments.length > 0">
+                <h5>Comments:</h5>
+                <ul>
+                    <li *ngFor="let comment of report.comments">
+                        <p>{{ comment.description }}</p>
+                        <p>Posted By: {{ comment.createdBy }}</p>
+                        <p>Timestamp: {{ comment.timestamp }}</p>
+                        <!-- update comment -->
+                        <button (click)="updateComment(report._id, comment._id)">Update</button>
+                    </li>
+                </ul>
+            </div>
+            <form (ngSubmit)="addComment(report._id)">
+                <input type="text" [(ngModel)]="newComment" placeholder="Add a comment" required>
+                <button type="submit">Submit</button>
+            </form>
+        </li>
+    </ul>
+</div>

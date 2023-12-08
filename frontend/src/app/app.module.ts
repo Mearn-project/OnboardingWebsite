@@ -12,6 +12,8 @@ import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './share/share.module';
 
+import { EmployeeModule } from './modules/employee/employee.module';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -26,6 +28,7 @@ import { SharedModule } from './share/share.module';
     StoreModule.forRoot({ auth: loginReducer }),
     EffectsModule.forRoot([LoginEffects]),
     RouterModule,
+    EmployeeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

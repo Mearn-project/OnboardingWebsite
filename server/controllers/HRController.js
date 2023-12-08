@@ -1,7 +1,10 @@
 const User = require("../models/User");
 const Email = require("../models/Email");
 const Visa = require("../models/Visa");
+const House = require("../models/House");
 const Application = require("../models/Application");
+const FacilityReport = require("../models/FacilityReport");
+const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const path = require("path");
@@ -58,21 +61,23 @@ const getUsersByName = async (req, res) => {
   try {
     const query = req.params.name;
 
-    // Perform a case-insensitive search for users with applicationStatus set to "Approved"
-    const users = await User.find({
-      $and: [
-        {
-          $or: [
-            { firstName: { $regex: query, $options: "i" } },
-            { lastName: { $regex: query, $options: "i" } },
-            { preferredName: { $regex: query, $options: "i" } },
-          ],
-        },
-        { applicationStatus: "Approved" },
-      ],
-    }).populate("application");
+    // Fetch all users and populate the 'application' field
+    const users = await User.find().populate("application");
 
-    res.json(users);
+    // Filter users based on the specified criteria
+    const filteredUsers = users.filter((user) => {
+      const application = user.application;
+
+      return (
+        user.applicationStatus === "Approved" &&
+        application &&
+        (application.firstName.toLowerCase().includes(query.toLowerCase()) ||
+          application.lastName.toLowerCase().includes(query.toLowerCase()) ||
+          application.preferredName.toLowerCase().includes(query.toLowerCase()))
+      );
+    });
+
+    res.json(filteredUsers);
   } catch (error) {
     console.error("Error searching users:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -177,7 +182,7 @@ const getPendingApplications = async (req, res) => {
     // Find users with 'Pending' application status
     const usersWithPendingApplications = await User.find({
       applicationStatus: "Pending",
-    });
+    }).populate("application");
 
     // Extract application information from each user
     const pendingApplications = usersWithPendingApplications.map(
@@ -197,7 +202,7 @@ const getRejectedApplications = async (req, res) => {
     // Find users with 'Rejected' application status
     const usersWithRejectedApplications = await User.find({
       applicationStatus: "Rejected",
-    });
+    }).populate("application");
 
     // Extract application information from each user
     const rejectedApplications = usersWithRejectedApplications.map(
@@ -214,10 +219,10 @@ const getRejectedApplications = async (req, res) => {
 
 const getApprovedApplications = async (req, res) => {
   try {
-    // Find users with 'Approved' application status
+    // Find users with 'Approved' application status and populate the 'application' field
     const usersWithApprovedApplications = await User.find({
       applicationStatus: "Approved",
-    });
+    }).populate("application");
 
     // Extract application information from each user
     const approvedApplications = usersWithApprovedApplications.map(
@@ -319,10 +324,7 @@ const getVisaApprovedUsers = async (req, res) => {
   try {
     // Fetch users with all visa fields set to "Approved"
     const users = await User.find({
-      "visa.optReceipt.status": "Approved",
-      "visa.optEAD.status": "Approved",
-      "visa.i983.status": "Approved",
-      "visa.i20.status": "Approved",
+      visaStatus: "Approved",
     })
       .populate("visa")
       .populate("application");
@@ -339,29 +341,25 @@ const getVisaApprovedUsersByName = async (req, res) => {
   try {
     const query = req.params.name;
 
-    // Perform a case-insensitive search for users with all visa documents status set to "Approved" and visa not null
-    const users = await User.find({
-      $and: [
-        {
-          $or: [
-            { firstName: { $regex: query, $options: "i" } },
-            { lastName: { $regex: query, $options: "i" } },
-            { preferredName: { $regex: query, $options: "i" } },
-          ],
-        },
-        { visa: { $ne: null } }, // Ensure visa is not null
-        {
-          "visa.optReceipt.status": "Approved",
-          "visa.optEAD.status": "Approved",
-          "visa.i983.status": "Approved",
-          "visa.i20.status": "Approved",
-        },
-      ],
-    })
-      .populate("application")
-      .populate("visa");
+    // Fetch all users and populate the 'application' and 'visa' fields
+    const users = await User.find().populate("application").populate("visa");
 
-    res.json(users);
+    // Filter users based on the specified criteria
+    const filteredUsers = users.filter((user) => {
+      const application = user.application;
+      const visa = user.visa;
+
+      return (
+        visa &&
+        user.visaStatus === "Approved" &&
+        application &&
+        (application.firstName.toLowerCase().includes(query.toLowerCase()) ||
+          application.lastName.toLowerCase().includes(query.toLowerCase()) ||
+          application.preferredName.toLowerCase().includes(query.toLowerCase()))
+      );
+    });
+
+    res.json(filteredUsers);
   } catch (error) {
     console.error("Error searching users:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -370,14 +368,9 @@ const getVisaApprovedUsersByName = async (req, res) => {
 
 const getVisaNotApprovedUsers = async (req, res) => {
   try {
-    // Fetch users with at least one visa field not set to "Approved"
+    // Fetch users with visaStatus not set to "Approved"
     const users = await User.find({
-      $or: [
-        { "visa.optReceipt.status": { $ne: "Approved" } },
-        { "visa.optEAD.status": { $ne: "Approved" } },
-        { "visa.i983.status": { $ne: "Approved" } },
-        { "visa.i20.status": { $ne: "Approved" } },
-      ],
+      $or: [{ visaStatus: { $ne: "Approved" } }],
       visa: { $exists: true, $ne: null },
     })
       .populate("visa") // Populate the 'visa' field to get the complete visa information
@@ -481,9 +474,19 @@ const approveVisaI20 = async (req, res) => {
       return res.status(404).json({ error: "Visa not found" });
     }
 
+    // Update the status of i20 in the visa
     visa.i20.status = "Approved";
 
+    // Save the changes to the visa
     await visa.save();
+
+    // If i20 is approved, update user's visaStatus to "Approved"
+    const user = await User.findOne({ visa: visaId });
+
+    if (user) {
+      user.visaStatus = "Approved";
+      await user.save();
+    }
 
     res.status(200).json({ message: "Visa I-20 approved successfully" });
   } catch (error) {
@@ -596,24 +599,34 @@ const addCommentToReport = async (req, res) => {
   try {
     const { reportId } = req.params;
     const { description } = req.body;
-    const userId = req.user.id; // Assuming you have user information in req.user
+    const userId = req.body.userId; // Assuming you have user information in req.user
     // Check if reportId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(reportId)) {
       return res.status(404).json({ error: "Invalid report ID" });
     }
-    // Find the facility report by ID
-    const report = await FacilityReport.findById(reportId);
-    if (!report) {
-      return res.status(404).json({ error: "Facility report not found" });
-    }
-    // Add the comment to the report
-    report.comments.push({
+    // Create a new Comment
+    const newComment = new Comment({
       description,
       createdBy: userId,
       timestamp: Date.now(),
     });
+
+    // Save the new comment to the database
+    await newComment.save();
+
+    // Find the facility report by ID
+    const report = await FacilityReport.findById(reportId);
+
+    if (!report) {
+      return res.status(404).json({ error: "Facility report not found" });
+    }
+
+    // Push the new comment's ID to the report
+    report.comments.push(newComment._id);
+
     // Save the updated report
     await report.save();
+
     res.status(200).json({ message: "Comment added successfully", report });
   } catch (error) {
     console.error("Error adding comment to report:", error);
@@ -643,15 +656,19 @@ const addHouse = async (req, res) => {
 const deleteHouse = async (req, res) => {
   try {
     const houseId = req.params.houseId;
+
     // Check if houseId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(houseId)) {
       return res.status(404).json({ error: "Invalid house ID" });
     }
+
     // Find the house by ID and remove it
-    const deletedHouse = await House.findByIdAndRemove(houseId);
+    const deletedHouse = await House.findByIdAndDelete(houseId);
+
     if (!deletedHouse) {
       return res.status(404).json({ error: "House not found" });
     }
+
     res
       .status(200)
       .json({ message: "House deleted successfully", deletedHouse });

@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
+const House = require('../models/House');
 const {generateToken, generateRegisterToken, decodeRegisterToken} = require('../utils/generateToken');
 
 require("dotenv").config({path: path.join(__dirname, '../../.env')});
@@ -99,7 +100,18 @@ const register = async (req, res) => {
             password: hashedPassword
         });
 
-        await user.save()
+        const allHouses = await House.find({});
+        const randomInt = Math.floor(Math.random() * allHouses.length);
+        const assignedHouse = allHouses[randomInt];
+        user.housing = assignedHouse._id;
+
+        const createdUser = await user.save()
+
+        assignedHouse.residents.push(createdUser._id);
+        await assignedHouse.save()
+
+
+        
 
         return res.status(201).json({ message: 'User registered successfully' });
     } catch(error) {

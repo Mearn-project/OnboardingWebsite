@@ -12,8 +12,6 @@ const submitApplication = async (req, res) => {
     try {
         const { body, files } = req;
 
-		// console.log(files)
-
 		const addressData = JSON.parse(body.address);
 		const emergencyContacts = JSON.parse(body.emergencyContacts);
 
@@ -27,19 +25,19 @@ const submitApplication = async (req, res) => {
 			createdEmergencyContacts.push(savedEmergencyContact._id);
 		}
 
-		const applicationDetails = {
+		let applicationDetails = {
 			firstName: body.firstName,
 			lastName: body.lastName,
 			middleName: body.middleName,
 			preferredName: body.preferredName,
-			profilePicture: files.profilePicture ? files.profilePicture[0] : '',
+			profilePictureUrl: '',
 
 			address: {
-			buildingApt: addressData.buildingApt,
-			street: addressData.street,
-			city: addressData.city,
-			state: addressData.state,
-			zip: addressData.zip,
+				buildingApt: addressData.buildingApt,
+				street: addressData.street,
+				city: addressData.city,
+				state: addressData.state,
+				zip: addressData.zip,
 			},
 			cellPhone: body.cellPhone,
 			workPhone: body.workPhone,
@@ -50,73 +48,148 @@ const submitApplication = async (req, res) => {
 			gender: body.gender || 'I do not wish to answer',
 			isUSCitizen: body.isUSCitizen === 'true',
 			workAuthorization: body.workAuthorization || '',
-			optReceipt: files.optReceipt ? files.optReceipt[0] : '',
+			optReceiptUrl: '',
+			optReceiptUrlPreview: '',
 			visaTitle: body.visaTitle || '',
 			startDate: body.startDate || '',
 			endDate: body.endDate || '',
 			hasDriverLicense: body.hasDriverLicense === 'true',
 			licenseNumber: body.licenseNumber || '',
 			licenseExpirationDate: body.licenseExpirationDate || '',
-			licenseCopy: files.licenseCopy ? files.licenseCopy[0] : '',
+			licenseCopyUrl: '',
+			licenseCopyUrlPreview: '',
 			reference: JSON.parse(body.reference || '{}'),
 			emergencyContacts: createdEmergencyContacts
 		};
-		
 
-        const uploadedFiles = await Promise.all(
-            Object.keys(files).map(async (key) => {
-				if (Array.isArray(files[key])) {
-				  const file = files[key][0];
-				//   console.log(file)
+		// console.log(files)
 
-				  const params = {
-					Bucket: 'my-onboarding-project',
-					Key: `${file.originalname}`,
-					Body: fs.createReadStream(path.normalize(file.path)),
-					ACL: 'public-read'
-				  };
-			
-				  const uploadedFile = s3.upload(params, (err, data) => {
-					if (err) {
-					  console.log(params);
-					  console.error('Error uploading file:', err);
-					  res.status(500).send('Error uploading file.');
-					} else {
-					  console.log('File uploaded successfully:', data.Location);
-					  res.json({ fileUrl: data.Location });
-					}
-				  });
-			
-				  return uploadedFile;
+		// await Promise.all(
+		const uploadPromises = Object.keys(files).map(async (key) => {
+			if (Array.isArray(files[key])) {
+				const file = files[key][0];
+				// console.log(file)
+
+				const fileName = file.fieldname;
+				if (fileName === 'optReceiptUrl') {
+
+					const params = {
+						Bucket: 'my-onboarding-project',
+						Key: `${file.originalname}`,
+						Body: fs.createReadStream(path.normalize(file.path)),
+						ACL: 'public-read'
+					};
+
+					return new Promise((resolve, reject) => {
+						s3.upload(params, async (err, data) => {
+							if (err) {
+								// console.log(params);
+								console.error('Error uploading file:', err);
+								reject(err);
+							} else {
+								console.log('File uploaded successfully:', data.Location);
+
+								applicationDetails[`${fileName}`] = data.Location;
+
+								const previewParams = {
+									Bucket: 'my-onboarding-project',
+									Key: `${file.originalname}`,
+									ResponseContentType: 'application/pdf',
+									ResponseContentDisposition: 'inline'
+								};
+
+								const previewUrl = s3.getSignedUrl('getObject', previewParams);
+								applicationDetails[`optReceiptUrlPreview`] = previewUrl;
+								resolve();
+							}
+						});
+					})
+				} else {
+					const fileData = fs.readFileSync(file.path);
+					const params = {
+						Bucket: 'my-onboarding-project',
+						Key: `${file.originalname}`,
+						Body: fileData,
+						ContentType: file.mimetype,
+						ACL: 'public-read'
+					};
+
+					return new Promise((resolve, reject) => {
+						s3.upload(params, async (err, data) => {
+							if (err) {
+								// console.log(params);
+								console.error('Error uploading file:', err);
+								reject(err);
+							} else {
+								console.log('File uploaded successfully:', data.Location);
+
+								applicationDetails[`${fileName}`] = data.Location;
+								if (fileName === 'licenseCopyUrl') {
+									const previewParams = {
+										Bucket: 'my-onboarding-project',
+										Key: `${file.originalname}`,
+										ResponseContentType: 'image/jpeg',
+										ResponseContentDisposition: 'inline'
+									};
+
+									const previewUrl = s3.getSignedUrl('getObject', previewParams);
+									applicationDetails[`${fileName}Preview`] = previewUrl;
+
+								}
+								resolve();
+							//   console.log(applicationDetails);
+
+							}
+						});
+					})
 				}
-			  })
-        );
 
-        // let userId;
-        // if (req.headers.cookie) {
-        //     const cookie = req.headers.cookie;
-        //     const token = cookie.slice(6);
-        //     userId = decodeToken(token);
-        // }
-        // const user = await User.findById(userId);
+			}
+		})
+		// );
+		try {
+			await Promise.all(uploadPromises);
+			// console.log(applicationDetails)
+			const application = new Application(applicationDetails);
+			const savedApplication = await application.save();
+			console.log(savedApplication.optReceiptUrl);
+			res.status(201).json({ message: 'Application submitted successfully' });
+		  } catch (error) {
+			console.error('Error submitting application:', error);
+			res.status(500).json({ message: 'Failed to submit application' });
+		  }
 
-        // if (!user) {
-        //     res.status(404).json({ message: 'User not found' });
-        // }
+	//   console.log(uploadedFiles);
+	// check user'logs in
 
-        // const application = new Application(applicationDetails);
-        // const savedApplication = await application.save();
+	// let userId;
+	// if (req.headers.cookie) {
+	//     const cookie = req.headers.cookie;
+	//     const token = cookie.slice(6);
+	//     userId = decodeToken(token);
+	// }
+	// const user = await User.findById(userId);
 
-        // const visa = new Visa({})
-        // const savedVisa = await visa.save();
+	// if (!user) {
+	//     res.status(404).json({ message: 'User not found' });
+	// }
 
-        // user.application = savedApplication._id;
-        // user.applicationStatus = "Pending";
-        // user.visa = savedVisa._id;
-        // await user.save();
-        // // const applicationId = savedApplication._id;
+	// const application = new Application(applicationDetails);
+	// const savedApplication = await application.save();
 
-        // res.status(201).json(user.application);
+	// const visa = new Visa({})
+	// const savedVisa = await visa.save();
+
+	// user.application = savedApplication._id;
+	// user.applicationStatus = "Pending";
+	// user.visa = savedVisa._id;
+	// await user.save();
+	// const applicationId = savedApplication._id;
+	// res.status(201).json({ message: 'Application submitted  successfully' });
+
+
+
+
 
     } catch (error) {
         console.error('Error submitting application:', error);
@@ -128,7 +201,7 @@ const getApplicationDetails = async (req, res) => {
     try {
 
         const {applicationId} = req.params;
-        const application = await Application.findById(applicationId);
+        const application = await Application.findById(applicationId).populate('emergencyContacts');
 
         if (!application) {
             return res.status(404).json({ message: 'Application not found' });

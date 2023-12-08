@@ -14,7 +14,7 @@ const getHousingDetails = async (req, res) => {
             const token = cookie.slice(6);
             userId = decodeToken(token);
         }
-        
+
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -63,7 +63,7 @@ const createFacilityReport = async (req, res) => {
             const token = cookie.slice(6);
             userId = decodeToken(token);
         }
-        
+
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -103,7 +103,8 @@ const getUserFacilityReports = async (req, res) => {
         }
         const user = await User.findById(userId)
             .populate('housing')
-            .populate({ path: 'housing.facilityReports', model: 'FacilityReport' });
+            .populate({ path: 'housing.facilityReports', model: 'FacilityReport' })
+            .populate({ path: 'housing.facilityReports.comments', model: 'Comment' })
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -149,19 +150,20 @@ const addComment = async (req, res) => {
     }
 }
 
-const getComments = async (req, res) => {
-    try {
-        const facilityReportId = req.params.facilityReportId;
-        const facilityReport = await FacilityReport.findById(facilityReportId).populate('comments');
-        if (!facilityReport) {
-            return res.status(404).json({ message: 'Facility report not found' });
-        }
-        res.json(facilityReport.comments);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+// get comments in get userFacilityReports
+// const getComments = async (req, res) => {
+//     try {
+//         const facilityReportId = req.params.facilityReportId;
+//         const facilityReport = await FacilityReport.findById(facilityReportId).populate('comments');
+//         if (!facilityReport) {
+//             return res.status(404).json({ message: 'Facility report not found' });
+//         }
+//         res.json(facilityReport.comments);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// }
 
 const updateComment = async (req, res) => {
     try {
@@ -176,7 +178,7 @@ const updateComment = async (req, res) => {
             userId = decodeToken(token);
         }
 
-        const facilityReport = await FacilityReport.findById(facilityReportId);
+        const facilityReport = await FacilityReport.findById(facilityReportId).populate('comments');
 
         if(!facilityReport) {
             return res.status(404).json({ message: 'Facility report not found' });
@@ -201,4 +203,4 @@ const updateComment = async (req, res) => {
     }
 }
 
-module.exports = { getHousingDetails, createFacilityReport, getUserFacilityReports, addComment, getComments, updateComment };
+module.exports = { getHousingDetails, createFacilityReport, getUserFacilityReports, addComment, updateComment };
