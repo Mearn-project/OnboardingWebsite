@@ -1,5 +1,7 @@
 const Visa = require('../models/Visa');
 const User = require('../models/User');
+const fs = require('fs');
+const s3 = require('../utils/aws');
 
 const getVisaInfo = async (req, res) => {
     try {
@@ -20,31 +22,95 @@ const getVisaInfo = async (req, res) => {
 const updateVisaInfo = async (req, res) => {
     try {
         const userId = req.params.userId;
-        const updatedData = req.body;
-        const user = await User.findById(userId);
+        const updatedFile = req.body;
+        const { body, files } = req;
+        const user = await User.findById(userId).populate('visa');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        if (updatedData.optReceipt) {
-            user.visa.optReceipt = { ...user.visa.optReceipt, ...updatedData.optReceipt };
-        }
-    
-        if (updatedData.optEAD) {
-            user.visa.optEAD = { ...user.visa.optEAD, ...updatedData.optEAD };
-        }
-    
-        if (updatedData.i983) {
-            user.visa.i983 = { ...user.visa.i983, ...updatedData.i983 };
-        }
-    
-        if (updatedData.i20) {
-            user.visa.i20 = { ...user.visa.i20, ...updatedData.i20 };
-        }
+        let fileUrl = '';
 
-        await user.save();
+        const uploadPromises = Object.keys(files).map(async (key) => {
+			if (Array.isArray(files[key])) {
+				const file = files[key][0];
+				// console.log(file)
 
-        res.json({ message: 'Visa status updated successfully' });
+				const fileName = file.fieldname;
+				if (fileName === 'optReceiptUrl') {
+
+					const params = {
+						Bucket: 'my-onboarding-project',
+						Key: `${file.originalname}`,
+						Body: fs.createReadStream(path.normalize(file.path)),
+						ACL: 'public-read'
+					};
+
+					return new Promise((resolve, reject) => {
+						s3.upload(params, async (err, data) => {
+							if (err) {
+								// console.log(params);
+								console.error('Error uploading file:', err);
+								reject(err);
+							} else {
+								console.log('File uploaded successfully:', data.Location);
+	
+								fileUrl = data.Location;
+	
+								resolve();
+							}
+						});
+					})  
+				} 
+			}
+		})
+
+        try {
+			await Promise.all(uploadPromises);
+			// console.log(applicationDetails)
+
+            if (updatedData === 'optReceipt') {
+                user.visa.optReceipt = { 
+                    status: 'Pending',
+                    feedback: '',
+                    url: fileUrl
+                };
+            }
+            if (updatedData === 'optEAD') {
+                user.visa.optEAD = { 
+                    status: 'Pending',
+                    feedback: '',
+                    url: fileUrl
+                };
+            }
+            if (updatedData === 'i983') {
+                user.visa.i983 = { 
+                    status: 'Pending',
+                    feedback: '',
+                    url: fileUrl
+                };
+            }
+            if (updatedData === 'i20') {
+                user.visa.optEAD = { 
+                    status: 'i20',
+                    feedback: '',
+                    url: fileUrl
+                };
+            }
+    
+            await user.save();
+
+            res.json({ message: 'Visa status updated successfully' });
+		  } catch (error) {
+			console.error('Error submitting application:', error);
+			res.status(500).json({ message: 'Failed to submit application' });
+		  }
+
+
+
+        
+
+       
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

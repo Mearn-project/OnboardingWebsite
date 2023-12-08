@@ -56,12 +56,22 @@ export class HousingComponent implements OnInit {
     })
   }
 
-  updateComment(commentId: string) {
+  updateComment(facilityReportId: string, commentId: string) {
     const newDescription = window.prompt('Enter the new comment description:');
-
-    if (newDescription !== null) {
-      this.http.patch(`http://localhost:3000/housing`, newDescription)
+    if (newDescription !== '') {
+      const description = {description: newDescription};
+      if (newDescription !== null) {
+        this.http.patch(`http://localhost:3000/housing/facility-reports/${facilityReportId}/comments/${commentId}`, description).subscribe({
+          next: (data) => {
+            this.getFacilityReports();
+          },
+          error: (error) => {
+            console.error('Error updating comment:', error);
+          }
+        })
+      }
     }
+    
   }
 
 

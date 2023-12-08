@@ -31,11 +31,11 @@ const VisaSchema = new mongoose.Schema({
         // should have two template for downloading
         emptyTemplateUrl: {
             type: String,
-            default: "https://onbording.s3.us-east-2.amazonaws.com/i983.pdf"
+            default: "https://my-onboarding-project.s3.us-east-2.amazonaws.com/i983.pdf"
         },
         sampleTemplateUrl: {
             type: String,
-            default: "https://onbording.s3.us-east-2.amazonaws.com/i983_sample.pdf"
+            default: "https://my-onboarding-project.s3.us-east-2.amazonaws.com/i983_sample.pdf"
         }
     },
     i20: {
