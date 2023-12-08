@@ -7,6 +7,7 @@ import { RegistrationComponent } from '../../components/employees/registration/r
 import { AppMaterialModule } from '../app.material/app.material.module';
 import { HousingComponent } from '../../components/employees/housing/housing.component';
 import { HttpClientModule } from '@angular/common/http';
+import { VisaStatusManagementComponent } from '../../components/employees/visa-status-management/visa-status-management.component';
 
 @NgModule({
   declarations: [
@@ -14,13 +15,21 @@ import { HttpClientModule } from '@angular/common/http';
     PersonalInformationComponent,
     RegistrationComponent,
     HousingComponent,
+    VisaStatusManagementComponent,
   ],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, AppMaterialModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AppMaterialModule,
+    HttpClientModule,
+  ],
   exports: [
     OnboardingApplicationComponent,
     PersonalInformationComponent,
     RegistrationComponent,
     HousingComponent,
+    VisaStatusManagementComponent,
   ],
 })
 export class EmployeeModule {}
