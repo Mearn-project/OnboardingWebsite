@@ -74,6 +74,7 @@ const ApplicationSchema = new mongoose.Schema({
     },
     // workAuthorizationUrl: String,
     optReceiptUrl: String,
+    optReciptUrlPreview: String,
     visaTitle: String,
     startDate: String,
     endDate: String,
@@ -93,6 +94,7 @@ const ApplicationSchema = new mongoose.Schema({
         type: String,
         // required: true
     },
+    licenseCopyUrlPreview: String,
     reference: {
         firstName: {
             type: String,

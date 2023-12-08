@@ -43,7 +43,7 @@
 
   <!-- Profile Picture Upload -->
   <div>
-    <input type="file" name="profilePicture" (change)="onFileSelect($event, 'profilePicture')" enctype="multipart/form-data"/>
+    <input type="file" name="profilePictureUrl" (change)="onFileSelect($event, 'profilePictureUrl')" enctype="multipart/form-data"/>
   </div>
 
   <!-- Address -->
@@ -128,9 +128,9 @@
     <mat-form-field>
       <mat-label>Gender</mat-label>
       <mat-select formControlName="gender">
-        <mat-option value="male">Male</mat-option>
-        <mat-option value="female">Female</mat-option>
-        <mat-option value="not_specified">I do not wish to answer</mat-option>
+        <mat-option value="Male">Male</mat-option>
+        <mat-option value="Female">Female</mat-option>
+        <mat-option value="I do not wish to answer">I do not wish to answer</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -162,7 +162,7 @@
         onboardingForm.get('visaDetails.visaType')!.value === 'F1(CPT/OPT)'
       "
     >
-      <input type="file" name="optReceipt" (change)="onFileSelect($event, 'optReceipt')" enctype="multipart/form-data"/>
+      <input type="file" name="optReceiptUrl" (change)="onFileSelect($event, 'optReceiptUrl')" enctype="multipart/form-data"/>
     </div>
     <mat-form-field>
       <mat-label>Visa Title</mat-label>
@@ -233,7 +233,7 @@
         ></mat-datepicker-toggle>
         <mat-datepicker #licenseExpPicker></mat-datepicker>
       </mat-form-field>
-      <input type="file" name="licenseCopy" (change)="onFileSelect($event, 'licenseCopy')" enctype="multipart/form-data"/>
+      <input type="file" name="licenseCopyUrl" (change)="onFileSelect($event, 'licenseCopyUrl')" enctype="multipart/form-data"/>
     </div>
   </div>
 

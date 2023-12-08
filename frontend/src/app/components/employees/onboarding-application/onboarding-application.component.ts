@@ -133,11 +133,11 @@ export class OnboardingApplicationComponent {
 
     if (inputElement.files && inputElement.files.length > 0) {
       const file = inputElement.files[0];
-      if (field === 'optReceipt') {
+      if (field === 'optReceiptUrl') {
         this.selectedOptReceipt = file;
-      } else if (field === 'licenseCopy') {
+      } else if (field === 'licenseCopyUrl') {
         this.selectedDriverLicense = file;
-      } else if (field === 'profilePicture') {
+      } else if (field === 'profilePictureUrl') {
         this.selectedProfilePicture = file;
       }
       // Handle other fields if needed
@@ -162,7 +162,7 @@ export class OnboardingApplicationComponent {
       { name: 'lastName', value: application.name.lastName },
       { name: 'middleName', value: application.name.middleName || '' },
       { name: 'preferredName', value: application.name.preferredName || '' },
-      { name: 'profilePicture', value: this.selectedProfilePicture || '' },
+      { name: 'profilePictureUrl', value: this.selectedProfilePicture || '' },
       { name: 'address', value: JSON.stringify(application.address)},
       { name: 'cellPhone', value: application.phoneNumbers.cell },
       { name: 'workPhone', value: application.phoneNumbers.work || '' },
@@ -173,14 +173,14 @@ export class OnboardingApplicationComponent {
       { name: 'gender', value: application.personalInfo.gender || 'I do not wish to answer' },
       { name: 'isUSCitizen', value: application.isUSCitizen === 'Yes' ? 'true' : 'false' },
       { name: 'workAuthorization', value: application.visaDetails.visaType || 'Citizen' },
-      { name: 'optReceipt', value: this.selectedOptReceipt || '' },
+      { name: 'optReceiptUrl', value: this.selectedOptReceipt || '' },
       { name: 'visaTitle', value: application.visaDetails.visaTitle || '' },
       { name: 'startDate', value: application.visaDetails.startDate || '' },
       { name: 'endDate', value: application.visaDetails.endDate || '' },
       { name: 'hasDriverLicense', value: application.driverLicense.hasDriverLicense === 'Yes' ? 'true' : 'false' },
       { name: 'licenseNumber', value: application.driverLicense.licenseNumber || '' },
       { name: 'licenseExpirationDate', value: application.driverLicense.licenseExpirationDate || '' },
-      { name: 'licenseCopy', value: this.selectedDriverLicense || '' },
+      { name: 'licenseCopyUrl', value: this.selectedDriverLicense || '' },
       { name: 'reference', value: JSON.stringify(application.reference || {
         email: '',
         firstName: '',
