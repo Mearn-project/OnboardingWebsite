@@ -63,7 +63,7 @@ const submitApplication = async (req, res) => {
 		};
 
 		// console.log(files)
-		
+
 		// await Promise.all(
 		const uploadPromises = Object.keys(files).map(async (key) => {
 			if (Array.isArray(files[key])) {
@@ -88,22 +88,22 @@ const submitApplication = async (req, res) => {
 								reject(err);
 							} else {
 								console.log('File uploaded successfully:', data.Location);
-	
+
 								applicationDetails[`${fileName}`] = data.Location;
-	
+
 								const previewParams = {
 									Bucket: 'my-onboarding-project',
 									Key: `${file.originalname}`,
 									ResponseContentType: 'application/pdf',
 									ResponseContentDisposition: 'inline'
 								};
-						
+
 								const previewUrl = s3.getSignedUrl('getObject', previewParams);
 								applicationDetails[`optReceiptUrlPreview`] = previewUrl;
 								resolve();
 							}
 						});
-					})  
+					})
 				} else {
 					const fileData = fs.readFileSync(file.path);
 					const params = {
@@ -122,7 +122,7 @@ const submitApplication = async (req, res) => {
 								reject(err);
 							} else {
 								console.log('File uploaded successfully:', data.Location);
-	
+
 								applicationDetails[`${fileName}`] = data.Location;
 								if (fileName === 'licenseCopyUrl') {
 									const previewParams = {
@@ -131,17 +131,17 @@ const submitApplication = async (req, res) => {
 										ResponseContentType: 'image/jpeg',
 										ResponseContentDisposition: 'inline'
 									};
-							
+
 									const previewUrl = s3.getSignedUrl('getObject', previewParams);
 									applicationDetails[`${fileName}Preview`] = previewUrl;
-									
+
 								}
 								resolve();
 							//   console.log(applicationDetails);
-					
+
 							}
 						});
-					}) 
+					})
 				}
 
 			}
@@ -160,7 +160,7 @@ const submitApplication = async (req, res) => {
 		  }
 
 	//   console.log(uploadedFiles);
-	// check user'logs in 
+	// check user'logs in
 
 	// let userId;
 	// if (req.headers.cookie) {
@@ -186,10 +186,10 @@ const submitApplication = async (req, res) => {
 	// await user.save();
 	// const applicationId = savedApplication._id;
 	// res.status(201).json({ message: 'Application submitted  successfully' });
-								
-						
-		  
-			
+
+
+
+
 
     } catch (error) {
         console.error('Error submitting application:', error);
