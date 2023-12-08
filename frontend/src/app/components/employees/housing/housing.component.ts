@@ -43,9 +43,9 @@ export class HousingComponent implements OnInit {
     })
   }
 
-  submitComment(facilityReportId: string) {
+  addComment(facilityReportId: string) {
     const comment = { description: this.newComment };
-    this.http.post('http://localhost:3000/housing/facility-reports/:facilityReportId/comments', comment).subscribe({
+    this.http.post(`http://localhost:3000/housing/facility-reports/${facilityReportId}/comments`, comment).subscribe({
       next: (data) => {
         this.newComment = '';
         this.getFacilityReports();
@@ -55,6 +55,15 @@ export class HousingComponent implements OnInit {
       }
     })
   }
+
+  updateComment(commentId: string) {
+    const newDescription = window.prompt('Enter the new comment description:');
+
+    if (newDescription !== null) {
+      this.http.patch(`http://localhost:3000/housing`, newDescription)
+    }
+  }
+
 
   private get currentUserId(): string {
     return '';
