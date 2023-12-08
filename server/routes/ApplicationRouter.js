@@ -21,9 +21,9 @@ const upload = multer({ storage: storage });
 
 // configure <form id="uploadForm" enctype="multipart/form-data">
 router.post('/', upload.fields([
-    { name: 'profilePicture', maxCount: 1 },
-    { name: 'optReceipt', maxCount: 1 },
-    { name: 'licenseCopy', maxCount: 1}
+    { name: 'profilePictureUrl', maxCount: 1 },
+    { name: 'optReceiptUrl', maxCount: 1 },
+    { name: 'licenseCopyUrl', maxCount: 1}
   ]), submitApplication);
 // router.post('/', submitApplication);
 

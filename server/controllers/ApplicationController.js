@@ -27,12 +27,12 @@ const submitApplication = async (req, res) => {
 			createdEmergencyContacts.push(savedEmergencyContact._id);
 		}
 
-		const applicationDetails = {
+		let applicationDetails = {
 			firstName: body.firstName,
 			lastName: body.lastName,
 			middleName: body.middleName,
 			preferredName: body.preferredName,
-			profilePicture: files.profilePicture ? files.profilePicture[0] : '',
+			profilePictureUrl: '',
 
 			address: {
 			buildingApt: addressData.buildingApt,
@@ -50,73 +50,106 @@ const submitApplication = async (req, res) => {
 			gender: body.gender || 'I do not wish to answer',
 			isUSCitizen: body.isUSCitizen === 'true',
 			workAuthorization: body.workAuthorization || '',
-			optReceipt: files.optReceipt ? files.optReceipt[0] : '',
+			optReceiptUrl: '',
+			optReceiptUrlPreview: '',
 			visaTitle: body.visaTitle || '',
 			startDate: body.startDate || '',
 			endDate: body.endDate || '',
 			hasDriverLicense: body.hasDriverLicense === 'true',
 			licenseNumber: body.licenseNumber || '',
 			licenseExpirationDate: body.licenseExpirationDate || '',
-			licenseCopy: files.licenseCopy ? files.licenseCopy[0] : '',
+			licenseCopyUrl: '',
+			licenseCopyUrlPreview: '',
 			reference: JSON.parse(body.reference || '{}'),
 			emergencyContacts: createdEmergencyContacts
 		};
+
+		// console.log(files)
 		
 
-        const uploadedFiles = await Promise.all(
-            Object.keys(files).map(async (key) => {
-				if (Array.isArray(files[key])) {
-				  const file = files[key][0];
-				//   console.log(file)
-
-				  const params = {
-					Bucket: 'my-onboarding-project',
-					Key: `${file.originalname}`,
-					Body: fs.createReadStream(path.normalize(file.path)),
-					ACL: 'public-read'
-				  };
-			
-				  const uploadedFile = s3.upload(params, (err, data) => {
+		await Promise.all(
+			Object.keys(files).map(async (key) => {
+			if (Array.isArray(files[key])) {
+			const file = files[key][0];
+			// console.log(file)
+		
+			const params = {
+				Bucket: 'my-onboarding-project',
+				Key: `${file.originalname}`,
+				Body: fs.createReadStream(path.normalize(file.path)),
+				ACL: 'public-read'
+			};
+		
+			return new Promise(async (resolve, reject) => { 
+				s3.upload(params, async (err, data) => {
 					if (err) {
-					  console.log(params);
-					  console.error('Error uploading file:', err);
-					  res.status(500).send('Error uploading file.');
+						console.log(params);
+						console.error('Error uploading file:', err);
+						reject(err);
 					} else {
-					  console.log('File uploaded successfully:', data.Location);
-					  res.json({ fileUrl: data.Location });
-					}
-				  });
+						console.log('File uploaded successfully:', data.Location);
+
+						const previewParams = {
+							Bucket: 'onbording',
+							Key: `${file.originalname}`,
+							ResponseContentType: 'application/pdf',
+							ResponseContentDisposition: 'inline'
+						};
+				
+						const previewUrl = s3.getSignedUrl('getObject', previewParams);
 			
-				  return uploadedFile;
-				}
-			  })
-        );
+						const fileName = file.fieldname;
+						applicationDetails[`${fileName}`] = data.Location;
+						if (fileName !== 'profilePictureUrl') {
+							applicationDetails[`${fileName}Preview`] = previewUrl;
+						}
+						
+					//   console.log(applicationDetails);
+			
+						const application = new Application(applicationDetails);
+						try {
+							const savedApplication = await application.save();
 
-        // let userId;
-        // if (req.headers.cookie) {
-        //     const cookie = req.headers.cookie;
-        //     const token = cookie.slice(6);
-        //     userId = decodeToken(token);
-        // }
-        // const user = await User.findById(userId);
+						//   console.log(uploadedFiles);
+						// check user'logs in 
 
-        // if (!user) {
-        //     res.status(404).json({ message: 'User not found' });
-        // }
+						// let userId;
+						// if (req.headers.cookie) {
+						//     const cookie = req.headers.cookie;
+						//     const token = cookie.slice(6);
+						//     userId = decodeToken(token);
+						// }
+						// const user = await User.findById(userId);
 
-        // const application = new Application(applicationDetails);
-        // const savedApplication = await application.save();
+						// if (!user) {
+						//     res.status(404).json({ message: 'User not found' });
+						// }
 
-        // const visa = new Visa({})
-        // const savedVisa = await visa.save();
+						// const application = new Application(applicationDetails);
+						// const savedApplication = await application.save();
 
-        // user.application = savedApplication._id;
-        // user.applicationStatus = "Pending";
-        // user.visa = savedVisa._id;
-        // await user.save();
-        // // const applicationId = savedApplication._id;
+						// const visa = new Visa({})
+						// const savedVisa = await visa.save();
 
-        // res.status(201).json(user.application);
+						// user.application = savedApplication._id;
+						// user.applicationStatus = "Pending";
+						// user.visa = savedVisa._id;
+						// await user.save();
+						// const applicationId = savedApplication._id;
+
+							resolve({ [key]: data.Location });
+						} catch (error) {
+							console.error('Error saving application:', error);
+							reject(error);
+						}
+					}
+				});
+			});
+			}
+			})
+		);
+		  
+			res.status(201).json({ message: 'Application submitted  successfully' });
 
     } catch (error) {
         console.error('Error submitting application:', error);
