@@ -26,7 +26,7 @@
                         <p>Posted By: {{ comment.createdBy }}</p>
                         <p>Timestamp: {{ comment.timestamp }}</p>
                         <!-- update comment -->
-                        <button (click)="updateComment(comment._id)">Update</button>
+                        <button (click)="updateComment(report._id, comment._id)">Update</button>
                     </li>
                 </ul>
             </div>

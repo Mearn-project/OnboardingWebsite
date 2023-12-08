@@ -70,7 +70,6 @@ const submitApplication = async (req, res) => {
 				const file = files[key][0];
 				// console.log(file)
 
-				// return new Promise(async (resolve, reject) => { 
 				const fileName = file.fieldname;
 				if (fileName === 'optReceiptUrl') {
 
@@ -202,7 +201,7 @@ const getApplicationDetails = async (req, res) => {
     try {
 
         const {applicationId} = req.params;
-        const application = await Application.findById(applicationId);
+        const application = await Application.findById(applicationId).populate('emergencyContacts');
 
         if (!application) {
             return res.status(404).json({ message: 'Application not found' });

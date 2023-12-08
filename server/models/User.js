@@ -31,6 +31,11 @@ const UserSchema = new mongoose.Schema({
         type: refType,
         ref: 'Visa'
     },
+    visaStatus: {
+        type: String,
+        enum: ["Approved", "Not Approved"],
+        default: "Not Approved",
+    },
     housing: {
         type: refType,
         ref: 'House'
