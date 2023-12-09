@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const EmergencyContact = require('../models/EmergencyContact');
+const { decodeToken } = require('../utils/generateToken')
 
 const getUserInfo = async (req, res) => {
     try {
@@ -10,6 +11,8 @@ const getUserInfo = async (req, res) => {
             const token = cookie.slice(6);
             userId = decodeToken(token);
         }
+
+        console.log(userId)
         
         const user = await User.findById(userId).populate({
             path: 'application',

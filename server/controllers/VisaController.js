@@ -2,6 +2,7 @@ const Visa = require('../models/Visa');
 const User = require('../models/User');
 const fs = require('fs');
 const s3 = require('../utils/aws');
+const { decodeToken } = require('../utils/generateToken')
 
 const getVisaInfo = async (req, res) => {
     try {
