@@ -3,8 +3,14 @@ const EmergencyContact = require('../models/EmergencyContact');
 
 const getUserInfo = async (req, res) => {
     try {
+        let userId;
 
-        const userId = req.params.userId;
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
+        
         const user = await User.findById(userId).populate({
             path: 'application',
             populate: { path: 'emergencyContacts' }
@@ -23,7 +29,14 @@ const getUserInfo = async (req, res) => {
 const updateUserInfo = async (req, res) => {
     try {
         const { body, files } = req;
-        const userId = req.params.userId;
+        
+        let userId;
+
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
 
         const user = await User.findById(userId).populate({
             path: 'application',

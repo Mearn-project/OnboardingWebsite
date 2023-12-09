@@ -16,9 +16,9 @@ const storage = multer.diskStorage({
   
 const upload = multer({ storage: storage });
 
-router.get('/:userId', getVisaInfo);
+router.get('/', getVisaInfo);
 
-router.put('/:userId', upload.fields([
+router.put('/', upload.fields([
     { name: 'optReceipt', maxCount: 1 },
     { name: 'optEAD', maxCount: 1 },
     { name: 'i983', maxCount: 1},

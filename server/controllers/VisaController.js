@@ -5,7 +5,17 @@ const s3 = require('../utils/aws');
 
 const getVisaInfo = async (req, res) => {
     try {
-        const userId = req.params.userId;
+        let userId;
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
+
+        const existUser = await User.findById(userId);
+        if (!existUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         
         const user = await User.findById(userId).populate('visa');
 
@@ -21,7 +31,17 @@ const getVisaInfo = async (req, res) => {
 
 const updateVisaInfo = async (req, res) => {
     try {
-        const userId = req.params.userId;
+        let userId;
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
+
+        const existUser = await User.findById(userId);
+        if (!existUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         // const updatedFile = req.body;
         const { files } = req;
         const user = await User.findById(userId).populate('visa');
