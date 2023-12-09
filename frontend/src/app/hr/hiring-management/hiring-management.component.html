@@ -16,21 +16,61 @@
     <mat-row *matRowDef="let row; columns: ['email', 'status'];"></mat-row>
   </mat-table>
 
-  <div *ngFor="let application of applications" class="application-card">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ application.fullName }}</mat-card-title>
-        <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        Application Status: {{ application.status }}
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-button (click)="viewApplication(application.id)">View Application</button>
-        <button mat-button *ngIf="application.status === 'pending'" (click)="approveApplication(application.id)">Approve</button>
-        <button mat-button *ngIf="application.status === 'pending'" (click)="rejectApplication(application.id, 'Your feedback')">Reject</button>
-      </mat-card-actions>
-    </mat-card>
+  <div class="application-section">
+    <h2>Pending Applications</h2>
+    <div *ngFor="let application of pendingApplications" class="application-card">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ application.firstName }} {{ application.lastName }}</mat-card-title>
+          <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          Application Status: {{ application.applicationStatus }}
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="viewApplication(application._id)">View Application</button>
+          <button mat-button (click)="approveApplication(application._id)">Approve</button>
+          <button mat-button (click)="rejectApplication(application._id, 'Your feedback')">Reject</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="application-section">
+    <h2>Rejected Applications</h2>
+    <div *ngFor="let application of rejectedApplications" class="application-card">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ application.firstName }} {{ application.lastName }}</mat-card-title>
+          <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          Application Status: {{ application.applicationStatus }}
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="viewApplication(application._id)">View Application</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Approved Applications Section -->
+  <div class="application-section">
+    <h2>Approved Applications</h2>
+    <div *ngFor="let application of approvedApplications" class="application-card">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ application.firstName }} {{ application.lastName }}</mat-card-title>
+          <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          Application Status: {{ application.applicationStatus }}
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="viewApplication(application._id)">View Application</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </div>
 

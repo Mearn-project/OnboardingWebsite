@@ -29,8 +29,16 @@ export class HiringService {
     return this.http.get<TokenHistoryResponse>(`${this.apiUrl}/emails`, { headers: this.getHeaders() });
   }
 
-  getApplications(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/applications`, { headers: this.getHeaders() });
+  getPendingApplications(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/applications/pending`, { headers: this.getHeaders() });
+  }
+
+  getRejectedApplications(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/applications/rejected`, { headers: this.getHeaders() });
+  }
+
+  getApprovedApplications(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/applications/approved`, { headers: this.getHeaders() });
   }
 
   approveApplication(id: number): Observable<any> {

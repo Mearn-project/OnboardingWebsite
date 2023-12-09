@@ -16,10 +16,15 @@ export class EmployeeProfilesComponent implements OnInit {
   constructor(private employeeService: EmployeeService) {}
 
   ngOnInit(): void {
-    this.employeeService.getEmployees().subscribe(employees => {
-      console.log(employees)
-      this.employees = employees;
-      this.filteredEmployees = employees;
+    this.employeeService.getEmployees().subscribe(data => {
+      this.employees = data.map(e => ({
+        ...e,
+        name: e.preferredName || `${e.application.firstName} ${e.application.lastName}`,
+        workAuthorizationTitle: e.application.workAuthorization,
+        phoneNumber: e.application.cellPhone,
+        ssn: e.application.ssn
+      }));
+      this.filteredEmployees = this.employees;
     });
   }
 
@@ -28,8 +33,14 @@ export class EmployeeProfilesComponent implements OnInit {
     if (!term) {
       this.filteredEmployees = this.employees;
     } else {
-      this.employeeService.getEmployeesByName(term).subscribe(employees => {
-        this.filteredEmployees = employees;
+      this.employeeService.getEmployeesByName(term).subscribe(data => {
+        this.filteredEmployees = data.map(e => ({
+          ...e,
+          name: e.preferredName || `${e.application.firstName} ${e.application.lastName}`,
+          workAuthorizationTitle: e.application.workAuthorization,
+          phoneNumber: e.application.cellPhone,
+          ssn: e.application.ssn
+        }));
       });
     }
   }
