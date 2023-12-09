@@ -22,8 +22,8 @@ const getVisaInfo = async (req, res) => {
 const updateVisaInfo = async (req, res) => {
     try {
         const userId = req.params.userId;
-        const updatedFile = req.body;
-        const { body, files } = req;
+        // const updatedFile = req.body;
+        const { files } = req;
         const user = await User.findById(userId).populate('visa');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -37,31 +37,29 @@ const updateVisaInfo = async (req, res) => {
 				// console.log(file)
 
 				const fileName = file.fieldname;
-				if (fileName === 'optReceiptUrl') {
 
-					const params = {
-						Bucket: 'my-onboarding-project',
-						Key: `${file.originalname}`,
-						Body: fs.createReadStream(path.normalize(file.path)),
-						ACL: 'public-read'
-					};
+                const params = {
+                    Bucket: 'my-onboarding-project',
+                    Key: `${file.originalname}`,
+                    Body: fs.createReadStream(path.normalize(file.path)),
+                    ACL: 'public-read'
+                };
 
-					return new Promise((resolve, reject) => {
-						s3.upload(params, async (err, data) => {
-							if (err) {
-								// console.log(params);
-								console.error('Error uploading file:', err);
-								reject(err);
-							} else {
-								console.log('File uploaded successfully:', data.Location);
-	
-								fileUrl = data.Location;
-	
-								resolve();
-							}
-						});
-					})  
-				} 
+                return new Promise((resolve, reject) => {
+                    s3.upload(params, async (err, data) => {
+                        if (err) {
+                            // console.log(params);
+                            console.error('Error uploading file:', err);
+                            reject(err);
+                        } else {
+                            console.log('File uploaded successfully:', data.Location);
+
+                            fileUrl = data.Location;
+
+                            resolve();
+                        }
+                    });
+                })  
 			}
 		})
 
@@ -92,7 +90,7 @@ const updateVisaInfo = async (req, res) => {
             }
             if (updatedData === 'i20') {
                 user.visa.optEAD = { 
-                    status: 'i20',
+                    status: 'Pending',
                     feedback: '',
                     url: fileUrl
                 };
@@ -106,11 +104,6 @@ const updateVisaInfo = async (req, res) => {
 			res.status(500).json({ message: 'Failed to submit application' });
 		  }
 
-
-
-        
-
-       
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
