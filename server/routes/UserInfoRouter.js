@@ -4,8 +4,8 @@ const { getUserInfo, updateUserInfo } = require('../controllers/UserInfoControll
 
 const router = express.Router();
 
-router.get('/:userId', getUserInfo);
+router.get('/', getUserInfo);
 
-router.put('/:userId', updateUserInfo);
+router.put('/', updateUserInfo);
 
 module.exports = router;
