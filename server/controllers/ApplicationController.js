@@ -14,6 +14,7 @@ const submitApplication = async (req, res) => {
 
 		const addressData = JSON.parse(body.address);
 		const emergencyContacts = JSON.parse(body.emergencyContacts);
+		const carInfo = JSON.parse(body.carInformation);
 
 		// console.log(Object.values(files))
 		const createdEmergencyContacts = [];
@@ -41,7 +42,11 @@ const submitApplication = async (req, res) => {
 			},
 			cellPhone: body.cellPhone,
 			workPhone: body.workPhone,
-			carInformation: JSON.parse(body.carInformation || '{}'),
+			carInformation: {
+				make: carInfo.make || '',
+				model: carInfo.model || '',
+				color: carInfo.color || '',
+			},
 			email: body.email,
 			ssn: body.ssn,
 			dateOfBirth: body.dateOfBirth,
@@ -63,7 +68,7 @@ const submitApplication = async (req, res) => {
 		};
 
 		// console.log(files)
-		
+
 		// await Promise.all(
 		const uploadPromises = Object.keys(files).map(async (key) => {
 			if (Array.isArray(files[key])) {
@@ -88,22 +93,22 @@ const submitApplication = async (req, res) => {
 								reject(err);
 							} else {
 								console.log('File uploaded successfully:', data.Location);
-	
+
 								applicationDetails[`${fileName}`] = data.Location;
-	
+
 								const previewParams = {
 									Bucket: 'my-onboarding-project',
 									Key: `${file.originalname}`,
 									ResponseContentType: 'application/pdf',
 									ResponseContentDisposition: 'inline'
 								};
-						
+
 								const previewUrl = s3.getSignedUrl('getObject', previewParams);
 								applicationDetails[`optReceiptUrlPreview`] = previewUrl;
 								resolve();
 							}
 						});
-					})  
+					})
 				} else {
 					const fileData = fs.readFileSync(file.path);
 					const params = {
@@ -122,7 +127,7 @@ const submitApplication = async (req, res) => {
 								reject(err);
 							} else {
 								console.log('File uploaded successfully:', data.Location);
-	
+
 								applicationDetails[`${fileName}`] = data.Location;
 								if (fileName === 'licenseCopyUrl') {
 									const previewParams = {
@@ -131,17 +136,17 @@ const submitApplication = async (req, res) => {
 										ResponseContentType: 'image/jpeg',
 										ResponseContentDisposition: 'inline'
 									};
-							
+
 									const previewUrl = s3.getSignedUrl('getObject', previewParams);
 									applicationDetails[`${fileName}Preview`] = previewUrl;
-									
+
 								}
 								resolve();
 							//   console.log(applicationDetails);
-					
+
 							}
 						});
-					}) 
+					})
 				}
 
 			}
@@ -154,13 +159,13 @@ const submitApplication = async (req, res) => {
 			const savedApplication = await application.save();
 			console.log(savedApplication.optReceiptUrl);
 			res.status(201).json({ message: 'Application submitted successfully' });
-		  } catch (error) {
+		} catch (error) {
 			console.error('Error submitting application:', error);
 			res.status(500).json({ message: 'Failed to submit application' });
-		  }
+		}
 
 	//   console.log(uploadedFiles);
-	// check user'logs in 
+	// check user'logs in
 
 	// let userId;
 	// if (req.headers.cookie) {
@@ -186,10 +191,10 @@ const submitApplication = async (req, res) => {
 	// await user.save();
 	// const applicationId = savedApplication._id;
 	// res.status(201).json({ message: 'Application submitted  successfully' });
-								
-						
-		  
-			
+
+
+
+
 
     } catch (error) {
         console.error('Error submitting application:', error);

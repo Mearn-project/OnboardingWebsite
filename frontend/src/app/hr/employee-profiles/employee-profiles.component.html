@@ -1,0 +1,35 @@
+<app-navigation></app-navigation>
+<div class="employee-profiles">
+  <mat-form-field>
+    <mat-label>Search for employee</mat-label>
+    <input matInput (keyup)="search($event)">
+  </mat-form-field>
+
+  <mat-table [dataSource]="filteredEmployees" class="mat-elevation-z8">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <mat-cell *matCellDef="let employee">{{employee.name}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="ssn">
+      <mat-header-cell *matHeaderCellDef>SSN</mat-header-cell>
+      <mat-cell *matCellDef="let employee">{{employee.ssn}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="workAuthorizationTitle">
+      <mat-header-cell *matHeaderCellDef>Work Authorization</mat-header-cell>
+      <mat-cell *matCellDef="let employee">{{employee.workAuthorizationTitle}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="phoneNumber">
+      <mat-header-cell *matHeaderCellDef>Phone Number</mat-header-cell>
+      <mat-cell *matCellDef="let employee">{{employee.phoneNumber}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+      <mat-cell *matCellDef="let employee">{{employee.email}}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="['name', 'ssn', 'workAuthorizationTitle', 'phoneNumber', 'email']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['name', 'ssn', 'workAuthorizationTitle', 'phoneNumber', 'email'];"></mat-row>
+  </mat-table>
+
+  <p *ngIf="filteredEmployees.length === 0">No records found</p>
+</div>

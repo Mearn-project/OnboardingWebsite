@@ -33,41 +33,14 @@ app.use('/personal-info', UserInfoRouter);
 app.use('/visa', VisaRouter);
 app.use('/housing', HousingRouter);
 
-app.get('/', async (req, res) => {
-
-    if (req.headers.cookie) {
-        const cookie = req.headers.cookie;
-
-        const token = cookie.slice(6);
-        userId = decodeToken(token);
-        const isHR = await isHR(userId);
-
-        if (isHR) {
-            res.render('admin', {
-                isLoggedIn: true,
-                isHR: true
-            })
-        } else {
-            res.render('index', { 
-                isLoggedIn: true,
-                isHR: false
-            });
-        }
-        
-    } else {
-        res.render('index', { 
-            isLoggedIn: false,
-            isHR: false
-        });
-    }
-    
-})
-
-
+app.get('/', (_req, res) => {
+    res.status(200);
+});
 
 app.all('*', (_req, res) => {
-    res.redirect('/');
+    res.status(404).send('Not Found');
 });
+
 
 
 module.exports = app;

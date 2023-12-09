@@ -1,0 +1,26 @@
+<div class="container">
+  <h1>Welcome, HR {{ (username$ | async) ?? 'Visitor' }}!</h1>
+  <button (click)="logout()">Logout</button>
+
+  <div class="links-container">
+    <a mat-card routerLink="/employee-profiles" class="link-card">
+      <mat-icon>person</mat-icon>
+      <span>Employee Profiles</span>
+    </a>
+
+    <a mat-card routerLink="/visa-status-management" class="link-card">
+      <mat-icon>assignment_ind</mat-icon>
+      <span>Visa Status Management</span>
+    </a>
+
+    <a mat-card routerLink="/hiring-management" class="link-card">
+      <mat-icon>business_center</mat-icon>
+      <span>Hiring Management</span>
+    </a>
+
+    <a mat-card routerLink="/housing-management" class="link-card">
+      <mat-icon>home</mat-icon>
+      <span>Housing Management</span>
+    </a>
+  </div>
+</div>

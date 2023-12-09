@@ -370,7 +370,7 @@ const getVisaNotApprovedUsers = async (req, res) => {
   try {
     // Fetch users with visaStatus not set to "Approved"
     const users = await User.find({
-      $or: [{ visaStatus: { $ne: "Approved" } }],
+      visaStatus: "Not Approved",
       visa: { $exists: true, $ne: null },
     })
       .populate("visa") // Populate the 'visa' field to get the complete visa information
@@ -587,6 +587,7 @@ const getAllHouses = async (req, res) => {
       populate: {
         path: "application", // Specify the field you want to populate
         model: "User",
+        options: { strictPopulate: false }, // Set strictPopulate to false
       },
     });
     res.json(houses);
@@ -595,6 +596,7 @@ const getAllHouses = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const addCommentToReport = async (req, res) => {
   try {
     const { reportId } = req.params;
@@ -636,6 +638,17 @@ const addCommentToReport = async (req, res) => {
 const addHouse = async (req, res) => {
   try {
     const { address, landlord } = req.body;
+
+    // Check if a house with the given address already exists
+    const existingHouse = await House.findOne({ address });
+
+    if (existingHouse) {
+      // If a house with the same address already exists, return an error
+      return res
+        .status(400)
+        .json({ error: "Duplicate address. House not added." });
+    }
+
     // Create a new house instance with the provided landlord information
     const newHouse = new House({
       address,
@@ -643,8 +656,10 @@ const addHouse = async (req, res) => {
       facilityReports: [],
       landlord,
     });
+
     // Save the new house to the database
     await newHouse.save();
+
     res
       .status(201)
       .json({ message: "House added successfully", house: newHouse });
