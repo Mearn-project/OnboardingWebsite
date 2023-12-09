@@ -40,10 +40,8 @@ export class EmployeeService {
 
   getEmployeesByName(name: string): Observable<Employee[]> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    return this.http.get<{users: Employee[], totalEmployees: number}>(`${this.apiBaseUrl}/name/${name}`, { headers })
-      .pipe(
-        map(response => response.users)
-      );
+    return this.http.get<Employee[]>(`${this.apiBaseUrl}/name/${name}`, { headers });
   }
+
 
 }

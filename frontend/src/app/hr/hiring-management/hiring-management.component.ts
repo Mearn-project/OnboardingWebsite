@@ -11,6 +11,9 @@ import { TokenModalComponent } from '../token-modal/token-modal.component';
 export class HiringManagementComponent implements OnInit {
   tokens: any[] = [];
   applications: any[] = [];
+  pendingApplications: any[] = [];
+  rejectedApplications: any[] = [];
+  approvedApplications: any[] = [];
 
   constructor(
     private hiringService: HiringService,
@@ -18,7 +21,7 @@ export class HiringManagementComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-      this.loadApplications();
+      this.loadApplicationsByStatus();
       this.loadTokenHistory();
     }
 
@@ -42,11 +45,20 @@ export class HiringManagementComponent implements OnInit {
 
 
 
-  loadApplications() {
-    this.hiringService.getApplications().subscribe(applications => {
-      this.applications = applications;
-    });
-  }
+  loadApplicationsByStatus() {
+      this.hiringService.getPendingApplications().subscribe(data => {
+        this.pendingApplications = data;
+        console.log(data)
+      });
+      this.hiringService.getRejectedApplications().subscribe(data => {
+        this.rejectedApplications = data;
+        console.log(data)
+      });
+      this.hiringService.getApprovedApplications().subscribe(data => {
+        this.approvedApplications = data;
+        console.log(data)
+      });
+    }
 
 
   loadTokenHistory() {
@@ -62,13 +74,13 @@ export class HiringManagementComponent implements OnInit {
 
   approveApplication(id: number) {
     this.hiringService.approveApplication(id).subscribe(() => {
-      this.loadApplications();
+      this.loadApplicationsByStatus();
     });
   }
 
   rejectApplication(id: number, feedback: string) {
     this.hiringService.rejectApplication(id, feedback).subscribe(() => {
-      this.loadApplications();
+      this.loadApplicationsByStatus();
     });
   }
 }
