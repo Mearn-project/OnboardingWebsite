@@ -12,18 +12,18 @@ router.route('/')
 // send registration link
 // router.post('/register', sendEmail);
 
+
+// router.route('/login')
+//     .get((req, res) => {
+//         res.render('login/index')
+//     })
+//     .post(loginUserValidation, login)
+
 // user register
 router.route('/register/:token')
     .get(verifyRegistrationToken, (req, res) => {
-
-        // TODO:
-        // Should redirect to another page for user to complete registration
         res.send('registration succeed');
-
-        // res.render('registration', { tokenData: req.tokenData });
-})
-
-router.route('/register/complete')
+    })
     .post(createUserValidation, register)
 
 
