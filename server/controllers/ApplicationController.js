@@ -14,6 +14,7 @@ const submitApplication = async (req, res) => {
 
 		const addressData = JSON.parse(body.address);
 		const emergencyContacts = JSON.parse(body.emergencyContacts);
+		const carInfo = JSON.parse(body.carInformation);
 
 		// console.log(Object.values(files))
 		const createdEmergencyContacts = [];
@@ -41,7 +42,11 @@ const submitApplication = async (req, res) => {
 			},
 			cellPhone: body.cellPhone,
 			workPhone: body.workPhone,
-			carInformation: JSON.parse(body.carInformation || '{}'),
+			carInformation: {
+				make: carInfo.make || '',
+				model: carInfo.model || '',
+				color: carInfo.color || '',
+			},
 			email: body.email,
 			ssn: body.ssn,
 			dateOfBirth: body.dateOfBirth,
@@ -154,10 +159,10 @@ const submitApplication = async (req, res) => {
 			const savedApplication = await application.save();
 			console.log(savedApplication.optReceiptUrl);
 			res.status(201).json({ message: 'Application submitted successfully' });
-		  } catch (error) {
+		} catch (error) {
 			console.error('Error submitting application:', error);
 			res.status(500).json({ message: 'Failed to submit application' });
-		  }
+		}
 
 	//   console.log(uploadedFiles);
 	// check user'logs in 
