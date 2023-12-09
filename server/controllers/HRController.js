@@ -107,7 +107,7 @@ const sendEmail = async (req, res) => {
       html: `
             <p>Hello,</p>
             <p>Click the following link to register your account: </p>
-            <a href="http://localhost:3000/api/HR/register/${token}">Register your account</a>
+            <a href="http://localhost:4200/register/${token}">Register your account</a>
             `,
     };
     const newEmail = new Email({
