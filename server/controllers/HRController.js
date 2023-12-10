@@ -107,7 +107,7 @@ const sendEmail = async (req, res) => {
       html: `
             <p>Hello,</p>
             <p>Click the following link to register your account: </p>
-            <a href="http://localhost:3000/api/HR/register/${token}">Register your account</a>
+            <a href="http://localhost:4200/register/${token}">Register your account</a>
             `,
     };
     const newEmail = new Email({
@@ -400,7 +400,48 @@ const getVisaById = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const sendNotification = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: EMAIL_ADD,
+        pass: EMAIL_PWD,
+      },
+    });
 
+    console.log(__dirname);
+    // href should be front-end page
+    const mailOptions = {
+      from: EMAIL_ADD,
+      to: email,
+      subject: "Notification",
+      html: `
+            <p>Hello,</p>
+            <p>Please upload required visa document</p>
+            <a href="http://localhost:4200/visa">VISA PAGE</a>
+            `,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Error sending notification email:", err);
+        return res
+          .status(500)
+          .json({ message: "Failed to send notification email" });
+      } else {
+        console.log("Notification email sent:", info.response);
+        return res.status(201).json({ message: "Notification email sent" });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Failed to send notification email" });
+  }
+};
 const approveVisaOPTReceipt = async (req, res) => {
   try {
     const visaId = req.params.visaId;
@@ -739,6 +780,7 @@ module.exports = {
   getVisaApprovedUsersByName,
   getVisaNotApprovedUsers,
   getVisaById,
+  sendNotification,
   approveVisaOPTReceipt,
   approveVisaEAD,
   approveVisaI983,

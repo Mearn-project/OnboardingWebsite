@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (this.isHR) {
         this.router.navigate(['/hr-home']);
       } else {
-        this.router.navigate(['/employee']);
+        this.router.navigate(['/application']);
       }
     });
   }

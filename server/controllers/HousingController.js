@@ -128,6 +128,11 @@ const addComment = async (req, res) => {
             userId = decodeToken(token);
         }
 
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
         const facilityReport = await FacilityReport.findById(facilityReportId);
 
         if (!facilityReport) {
@@ -177,6 +182,12 @@ const updateComment = async (req, res) => {
             const token = cookie.slice(6);
             userId = decodeToken(token);
         }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
 
         const facilityReport = await FacilityReport.findById(facilityReportId).populate('comments');
 

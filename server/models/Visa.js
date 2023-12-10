@@ -5,29 +5,32 @@ const VisaSchema = new mongoose.Schema({
     optReceipt: {
         status: {
             type: String,
-            enum: ['Pending', 'Approved', 'Rejected'],
-            default: 'Pending'
+            enum: ['Uploading', 'Pending', 'Approved', 'Rejected'],
+            default: 'Uploading'
         },
         feedback: String,
-        url: String
+        url: String,
+        previewUrl: String
     },
     optEAD: {
         status: {
             type: String,
-            enum: ['Pending', 'Approved', 'Rejected'],
-            default: 'Pending'
+            enum: ['Uploading', 'Pending', 'Approved', 'Rejected'],
+            default: 'Uploading'
         },
         feedback: String,
-        url: String
+        url: String,
+        previewUrl: String
     },
     i983: {
         status: {
             type: String,
-            enum: ['Pending', 'Approved', 'Rejected'],
-            default: 'Pending'
+            enum: ['Uploading', 'Pending', 'Approved', 'Rejected'],
+            default: 'Uploading'
         },
         feedback: String,
-        filledFormUrl: String,
+        url: String,
+        previewUrl: String,
         // should have two template for downloading
         emptyTemplateUrl: {
             type: String,
@@ -41,11 +44,12 @@ const VisaSchema = new mongoose.Schema({
     i20: {
         status: {
             type: String,
-            enum: ['Pending', 'Approved', 'Rejected'],
-            default: 'Pending'
+            enum: ['Uploading', 'Pending', 'Approved', 'Rejected'],
+            default: 'Uploading'
         },
         feedback: String,
-        url: String
+        url: String,
+        previewUrl: String,
     }
 })
 

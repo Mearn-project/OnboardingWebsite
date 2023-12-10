@@ -8,7 +8,7 @@ router.get('/', getHousingDetails)
 
 router.post('/facility-reports', createFacilityReport);
 
-router.get('/users/:userId/facility-reports', getUserFacilityReports);
+router.get('/users/facility-reports', getUserFacilityReports);
 
 router.post('/facility-reports/:facilityReportId/comments', addComment)
 

@@ -19,9 +19,13 @@ const bodyParser = require('body-parser');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.json());
-app.use(cors());
 app.use(cookieParser());
+app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:4200',
+    credentials: true
+}));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(":method :url :status :response-time ms"));
 

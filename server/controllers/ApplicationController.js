@@ -5,12 +5,29 @@ const User = require('../models/User');
 const Application = require('../models/Application');
 const Visa = require('../models/Visa');
 const EmergencyContact = require('../models/EmergencyContact');
+const { decodeToken } = require('../utils/generateToken')
 
 const s3 = require('../utils/aws');
 
 const submitApplication = async (req, res) => {
     try {
         const { body, files } = req;
+
+		let userId;
+
+
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
+
+		const user = await User.findById(userId)
+		// console.log(req.headers)
+
+		if (!user) {
+			res.status(404).json({ message: 'User not found' });
+		}
 
 		const addressData = JSON.parse(body.address);
 		const emergencyContacts = JSON.parse(body.emergencyContacts);
@@ -67,6 +84,29 @@ const submitApplication = async (req, res) => {
 			emergencyContacts: createdEmergencyContacts
 		};
 
+		let visaData = {
+			optReceipt: {
+				feedback: '',
+				url: '',
+				previewUrl: ''
+			},
+			optEAD: {
+				feedback: '',
+				url: '',
+				previewUrl: ''
+			},
+			i983: {
+				feedback: '',
+				filledFormUrl: '',
+				previewUrl: ''
+			},
+			i20: {
+				feedback: '',
+				url: '',
+				previewUrl: ''
+			}
+		}
+
 		// console.log(files)
 
 		// await Promise.all(
@@ -79,7 +119,7 @@ const submitApplication = async (req, res) => {
 				if (fileName === 'optReceiptUrl') {
 
 					const params = {
-						Bucket: 'my-onboarding-project',
+						Bucket: 'revsawsbucket',
 						Key: `${file.originalname}`,
 						Body: fs.createReadStream(path.normalize(file.path)),
 						ACL: 'public-read'
@@ -96,6 +136,8 @@ const submitApplication = async (req, res) => {
 
 								applicationDetails[`${fileName}`] = data.Location;
 
+								visaData[`${fileName}`].url = data.Location;
+
 								const previewParams = {
 									Bucket: 'my-onboarding-project',
 									Key: `${file.originalname}`,
@@ -105,6 +147,7 @@ const submitApplication = async (req, res) => {
 
 								const previewUrl = s3.getSignedUrl('getObject', previewParams);
 								applicationDetails[`optReceiptUrlPreview`] = previewUrl;
+								visaData[`${fileName}`].previewUrl = previewUrl;
 								resolve();
 							}
 						});
@@ -112,7 +155,7 @@ const submitApplication = async (req, res) => {
 				} else {
 					const fileData = fs.readFileSync(file.path);
 					const params = {
-						Bucket: 'my-onboarding-project',
+						Bucket: 'revsawsbucket',
 						Key: `${file.originalname}`,
 						Body: fileData,
 						ContentType: file.mimetype,
@@ -152,49 +195,24 @@ const submitApplication = async (req, res) => {
 			}
 		})
 		// );
-		try {
-			await Promise.all(uploadPromises);
-			// console.log(applicationDetails)
-			const application = new Application(applicationDetails);
-			const savedApplication = await application.save();
-			console.log(savedApplication.optReceiptUrl);
-			res.status(201).json({ message: 'Application submitted successfully' });
-		} catch (error) {
-			console.error('Error submitting application:', error);
-			res.status(500).json({ message: 'Failed to submit application' });
+		// try {
+		await Promise.all(uploadPromises);
+		// console.log(applicationDetails)
+		const application = new Application(applicationDetails);
+		const savedApplication = await application.save();
+
+		const visa = new Visa(visaData);
+		const savedVisa = await visa.save();
+
+		user.application = savedApplication._id;
+		user.applicationStatus = "Pending";
+		user.visa = savedVisa._id;
+		if (applicationDetails.workAuthorization !== 'F1(CPT/OPT)') {
+			user.visaStatus = 'US Citizen';
 		}
+		await user.save();
 
-	//   console.log(uploadedFiles);
-	// check user'logs in
-
-	// let userId;
-	// if (req.headers.cookie) {
-	//     const cookie = req.headers.cookie;
-	//     const token = cookie.slice(6);
-	//     userId = decodeToken(token);
-	// }
-	// const user = await User.findById(userId);
-
-	// if (!user) {
-	//     res.status(404).json({ message: 'User not found' });
-	// }
-
-	// const application = new Application(applicationDetails);
-	// const savedApplication = await application.save();
-
-	// const visa = new Visa({})
-	// const savedVisa = await visa.save();
-
-	// user.application = savedApplication._id;
-	// user.applicationStatus = "Pending";
-	// user.visa = savedVisa._id;
-	// await user.save();
-	// const applicationId = savedApplication._id;
-	// res.status(201).json({ message: 'Application submitted  successfully' });
-
-
-
-
+		res.status(201).json({ message: 'Application submitted successfully' });
 
     } catch (error) {
         console.error('Error submitting application:', error);
