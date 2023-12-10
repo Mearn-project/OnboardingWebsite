@@ -61,7 +61,7 @@ const updateVisaInfo = async (req, res) => {
         const fileName = file.fieldname;
 
         const params = {
-          Bucket: "my-onboarding-project",
+          Bucket: "revsawsbucket",
           Key: `${file.originalname}`,
           Body: fs.createReadStream(path.normalize(file.path)),
           ACL: "public-read",
