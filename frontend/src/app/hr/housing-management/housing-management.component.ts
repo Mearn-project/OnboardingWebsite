@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { HousingService } from '../../services/housing.service';
-import { FacilityReport } from '../../models/facility-report.model';
-import { Comment } from '../../models/comment.model';
+import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
 import { House } from '../../models/house.model';
+import { addHouse, deleteHouse, loadHouses, addCommentToReport } from '../../store/housing.actions';
+// import { State } from '../../store/housing.reducer';
+import { AppState } from '../../store/app.state';
+import { MatDialog } from '@angular/material/dialog';
+import { HouseSummaryModalComponent } from '../house-summary-modal/house-summary-modal.component';
+import { AddHouseModalComponent } from '../add-house-modal/add-house-modal.component';
 
 @Component({
   selector: 'app-housing-management',
@@ -10,69 +15,68 @@ import { House } from '../../models/house.model';
   styleUrls: ['./housing-management.component.scss']
 })
 export class HousingManagementComponent implements OnInit {
-  houses: House[] = [];
-  reports: FacilityReport[] = [];
-  comments: Comment[] = [];
+  houses$: Observable<House[]> | undefined;
+  selectedHouse: House | null = null;
+  private subscription: Subscription = new Subscription();
 
-  constructor(private housingService: HousingService) {}
+
+  constructor(
+    private store: Store<AppState>,
+    public dialog: MatDialog
+    ) {}
 
   ngOnInit(): void {
-    this.loadHouses();
+    console.log('Component initialized, dispatching loadHouses action');
+    this.store.dispatch(loadHouses());
+    this.houses$ = this.store.select((state: AppState) => state.houses.houses);
+    const housesSubscription = this.houses$.subscribe(houses => {
+      console.log('Houses state:', houses);
+    });
+    this.subscription.add(housesSubscription);
   }
 
-  loadHouses() {
-    this.housingService.getHousingDetails()
-      .subscribe(houses => {
-        this.houses = houses.map(house => new House(house));
-      });
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
-  addHouse() {
+  // openHouseSummary(house: House): void {
+  //   this.selectedHouse = house;
+  // }
+
+  openHouseSummary(house: House): void {
+    this.dialog.open(HouseSummaryModalComponent, {
+      width: '500px',  // Adjust size as needed
+      data: { house: house }
+    });
   }
 
-  viewDetails(houseId: string) {
+  openAddHouseModal(): void {
+    const dialogRef = this.dialog.open(AddHouseModalComponent, {
+      width: '500px' // Adjust size as needed
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.onAddHouse(result);
+      }
+    });
   }
 
-  deleteHouse(houseId: string) {
+  onAddHouse(house: any): void {
+    this.store.dispatch(addHouse({ house }));
   }
 
-  loadFacilityReports(houseId: string) {
-    this.housingService.getUserFacilityReports(houseId)
-      .subscribe(reports => {
-        this.reports = reports.map(report => new FacilityReport(report));
-      });
+  onDeleteHouse(houseId: string): void {
+    this.store.dispatch(deleteHouse({ id: houseId }));
+    setTimeout(() => {
+      this.store.dispatch(loadHouses());
+    }, 500);
   }
 
-  createReport(reportData: FacilityReport) {
-    this.housingService.createFacilityReport(reportData)
-      .subscribe(newReport => {
-        this.reports.push(new FacilityReport(newReport));
-      });
-  }
-
-  getComment() {
-  }
-
-  getCommentById(commentId: string): Comment | undefined {
-    return this.comments.find(comment => comment.id === commentId);
-  }
-
-  addComment(reportId: string, commentData: string) {
-    const newComment = new Comment({ description: commentData, createdBy: 'currentUserId' });
-    this.housingService.addCommentToReport(reportId, newComment)
-      .subscribe(addedComment => {
-        const report = this.reports.find(r => r.id === reportId);
-        if (report) {
-          report.comments?.push(addedComment.id!);
-        }
-      });
-  }
-
-  updateComment(reportId: string, commentId: string, commentData: string) {
-    const updatedComment = new Comment({ id: commentId, description: commentData, createdBy: 'currentUserId' });
-    this.housingService.updateComment(reportId, commentId, updatedComment)
-      .subscribe(updatedComment => {
-        // Logic to update comment in the reports array
-      });
+  onAddCommentToReport(reportId: string, comment: string): void {
+    this.store.dispatch(addCommentToReport({
+      facilityReportId: reportId,
+      comment: comment
+    }));
   }
 }

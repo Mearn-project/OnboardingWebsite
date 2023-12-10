@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Add New House</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Address</mat-label>
+    <input matInput [(ngModel)]="house.address">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Landlord's Full Name</mat-label>
+    <input matInput [(ngModel)]="house.landlord.fullName">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Landlord's Phone Number</mat-label>
+    <input matInput [(ngModel)]="house.landlord.phoneNumber">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Landlord's Email</mat-label>
+    <input matInput [(ngModel)]="house.landlord.email">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onAddHouse()">Add House</button>
+</mat-dialog-actions>

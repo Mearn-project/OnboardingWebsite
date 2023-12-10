@@ -1,11 +1,14 @@
-.housing-management-container {
-  margin: 20px;
-
-  .mat-table {
-    width: 100%;
+.housing-management {
+  .house-card {
+    margin-bottom: 20px;
   }
 
-  button {
-    margin: 10px;
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  mat-card {
+    margin-top: 10px;
   }
 }

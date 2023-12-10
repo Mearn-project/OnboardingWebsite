@@ -1,0 +1,22 @@
+<mat-dialog-content>
+  <h2>{{ application.firstName }} {{ application.lastName }}</h2>
+  <p><strong>Email:</strong> {{ application.email }}</p>
+  <p><strong>Phone:</strong> {{ application.cellPhone }}</p>
+  <p><strong>Date of Birth:</strong> {{ application.dateOfBirth | date }}</p>
+  <p><strong>Gender:</strong> {{ application.gender }}</p>
+  <p><strong>Work Authorization:</strong> {{ application.workAuthorization }}</p>
+  <p><strong>Address:</strong> {{ application.address.buildingApt }}, {{ application.address.street }}, {{ application.address.city }}, {{ application.address.state }}, {{ application.address.zip }}</p>
+
+  <p><strong>SSN:</strong> {{ application.ssn }}</p>
+  <p><strong>Visa Title:</strong> {{ application.visaTitle }}</p>
+  <p><strong>Has Driver License:</strong> {{ application.hasDriverLicense ? 'Yes' : 'No' }}</p>
+  <p><strong>License Number:</strong> {{ application.licenseNumber }}</p>
+
+  <div *ngIf="application.profilePictureUrl">
+    <img [src]="application.profilePictureUrl" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.state';
 import { TokenHistoryResponse } from '../models/token-history-response.model';
+import { Application } from '../models/application.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,23 +30,29 @@ export class HiringService {
     return this.http.get<TokenHistoryResponse>(`${this.apiUrl}/emails`, { headers: this.getHeaders() });
   }
 
-  getPendingApplications(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/applications/pending`, { headers: this.getHeaders() });
+  getPendingApplications(): Observable<Application[]> {
+    return this.http.get<{pendingApplications: Application[]}>(`${this.apiUrl}/applications/pending`, { headers: this.getHeaders() }).pipe(
+      map(response => response.pendingApplications)
+    );
   }
 
-  getRejectedApplications(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/applications/rejected`, { headers: this.getHeaders() });
+  getRejectedApplications(): Observable<Application[]> {
+    return this.http.get<{rejectedApplications: Application[]}>(`${this.apiUrl}/applications/rejected`, { headers: this.getHeaders() }).pipe(
+      map(response => response.rejectedApplications)
+    );
   }
 
-  getApprovedApplications(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/applications/approved`, { headers: this.getHeaders() });
+  getApprovedApplications(): Observable<Application[]> {
+    return this.http.get<{approvedApplications: Application[]}>(`${this.apiUrl}/applications/approved`, { headers: this.getHeaders() }).pipe(
+      map(response => response.approvedApplications)
+    );
   }
 
-  approveApplication(id: number): Observable<any> {
+  approveApplication(id: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/applications/approve/${id}`, {}, { headers: this.getHeaders() });
   }
 
-  rejectApplication(id: number, feedback: string): Observable<any> {
+  rejectApplication(id: string, feedback: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/applications/reject/${id}`, { feedback }, { headers: this.getHeaders() });
   }
 }
