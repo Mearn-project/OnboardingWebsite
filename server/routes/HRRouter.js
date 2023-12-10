@@ -20,6 +20,7 @@ const {
   getVisaApprovedUsersByName,
   getVisaNotApprovedUsers,
   getVisaById,
+  sendNotification,
   approveVisaOPTReceipt,
   approveVisaEAD,
   approveVisaI983,
@@ -110,6 +111,8 @@ router.get(
 );
 // Get visa details for a specific user
 router.get("/visa/:visaId", jwtValidation, checkIsHR, getVisaById);
+// HR send Notification to an email address(in req body) to remind user to upload visa file
+router.post("/sendNotification", jwtValidation, checkIsHR, sendNotification);
 // Approve OPT Receipt for a specific user
 router.put(
   "/visa/:visaId/approve/optReceipt",
