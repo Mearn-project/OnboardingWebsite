@@ -200,7 +200,7 @@ export class OnboardingApplicationComponent {
 
     // formData.append('applicationData', formData);
     // console.log(formData)
-    this.http.post('http://localhost:3000/application', formData)
+    this.http.post('http://localhost:3000/application', formData, { withCredentials: true })
       .subscribe({
         next: (response) => {
           console.log('Application submitted successfully:', response);
