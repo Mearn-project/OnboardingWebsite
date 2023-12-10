@@ -50,9 +50,18 @@ const updateUserInfo = async (req, res) => {
         }
         const application = user.application;
 
-        const addressData = JSON.parse(body.address);
-		const emergencyContacts = JSON.parse(body.emergencyContacts);
-        const carInfo = JSON.parse(body.carInformation);
+        let addressData;
+        let emergencyContacts;
+        let carInfo;
+        if (req.body.address) {
+            addressData = JSON.parse(body.address);
+        }
+        if (req.body.emergencyContacts) {
+            emergencyContacts = JSON.parse(body.emergencyContacts);
+        }
+        if (req.body.carInfo) {
+            carInfo = JSON.parse(body.carInformation);
+        }
 
         const updatedEmergencyContacts = [];
 
