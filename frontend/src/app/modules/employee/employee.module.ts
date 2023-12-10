@@ -7,7 +7,7 @@ import { RegistrationComponent } from '../../components/employees/registration/r
 import { AppMaterialModule } from '../app.material/app.material.module';
 import { HousingComponent } from '../../components/employees/housing/housing.component';
 import { HttpClientModule } from '@angular/common/http';
-// import { EmployeeVisaStatusManagementComponent } from '../../components/employees/visa-status-management/visa-status-management.component';
+import { EmployeeVisaStatusManagementComponent } from '../../components/employees/visa-status-management/visa-status-management.component';
 import { EmployeeRoutingModule } from './employee.routing.module';
 
 @NgModule({
@@ -16,7 +16,7 @@ import { EmployeeRoutingModule } from './employee.routing.module';
     PersonalInformationComponent,
     RegistrationComponent,
     HousingComponent,
-    // EmployeeVisaStatusManagementComponent,
+    EmployeeVisaStatusManagementComponent,
   ],
   imports: [
     CommonModule,
@@ -31,7 +31,7 @@ import { EmployeeRoutingModule } from './employee.routing.module';
     PersonalInformationComponent,
     RegistrationComponent,
     HousingComponent,
-    // EmployeeVisaStatusManagementComponent,
+    EmployeeVisaStatusManagementComponent,
   ],
 })
 export class EmployeeModule {}
