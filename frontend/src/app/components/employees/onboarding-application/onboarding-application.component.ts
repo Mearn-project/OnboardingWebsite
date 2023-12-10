@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { UserService } from 'src/app/services/user.service';
+import { Router } from '@angular/router';
 
 interface Application {
   firstName: any;
@@ -37,7 +39,7 @@ interface Application {
   templateUrl: './onboarding-application.component.html',
   styleUrl: './onboarding-application.component.scss',
 })
-export class OnboardingApplicationComponent {
+export class OnboardingApplicationComponent implements OnInit {
   onboardingForm: FormGroup;
   isSubmitted = false; // Track if form is submitted
 
@@ -45,8 +47,13 @@ export class OnboardingApplicationComponent {
   selectedProfilePicture: File | null = null;
   selectedDriverLicense: File | null = null;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
-    this.onboardingForm = this.fb.group({
+  constructor(
+    private fb: FormBuilder, 
+    private http: HttpClient,
+    public userService: UserService,
+    private router: Router
+    ) {
+      this.onboardingForm = this.fb.group({
       name: this.fb.group({
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],
@@ -100,6 +107,21 @@ export class OnboardingApplicationComponent {
       }),
       emergencyContacts: this.fb.array([this.createEmergencyContact()]),
     });
+  }
+
+  ngOnInit(): void {
+    this.loadUserInfo();
+  }
+
+  loadUserInfo(): void {
+    this.userService.getUserInfo().subscribe(
+      (data) => {
+        if (data.application !== undefined) {
+          this.router.navigate(['/personal-information']);
+        }
+        
+      }
+    );
   }
 
   // Method to add a new emergency contact
@@ -204,6 +226,7 @@ export class OnboardingApplicationComponent {
       .subscribe({
         next: (response) => {
           console.log('Application submitted successfully:', response);
+          this.router.navigate(['/personal-information']);
         },
         error: (error) => {
           console.error('Error submitting application:', error);

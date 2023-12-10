@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'application', component: OnboardingApplicationComponent },
   { path: 'housing', component: HousingComponent },
   // not operational:
-  //   { path: 'personal-information', component: PersonalInformationComponent },
+  { path: 'personal-information', component: PersonalInformationComponent },
 
     // {
   //     path: 'employee-visa-status-management',

@@ -84,6 +84,29 @@ const submitApplication = async (req, res) => {
 			emergencyContacts: createdEmergencyContacts
 		};
 
+		let visaData = {
+			optReceipt: {
+				feedback: '',
+				url: '',
+				previewUrl: ''
+			},
+			optEAD: {
+				feedback: '',
+				url: '',
+				previewUrl: ''
+			},
+			i983: {
+				feedback: '',
+				filledFormUrl: '',
+				previewUrl: ''
+			},
+			i20: {
+				feedback: '',
+				url: '',
+				previewUrl: ''
+			}
+		}
+
 		// console.log(files)
 
 		// await Promise.all(
@@ -113,6 +136,8 @@ const submitApplication = async (req, res) => {
 
 								applicationDetails[`${fileName}`] = data.Location;
 
+								visaData[`${fileName}`].url = data.Location;
+
 								const previewParams = {
 									Bucket: 'my-onboarding-project',
 									Key: `${file.originalname}`,
@@ -122,6 +147,7 @@ const submitApplication = async (req, res) => {
 
 								const previewUrl = s3.getSignedUrl('getObject', previewParams);
 								applicationDetails[`optReceiptUrlPreview`] = previewUrl;
+								visaData[`${fileName}`].previewUrl = previewUrl;
 								resolve();
 							}
 						});
@@ -175,7 +201,7 @@ const submitApplication = async (req, res) => {
 		const application = new Application(applicationDetails);
 		const savedApplication = await application.save();
 
-		const visa = new Visa({})
+		const visa = new Visa(visaData);
 		const savedVisa = await visa.save();
 
 		user.application = savedApplication._id;

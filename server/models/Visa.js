@@ -9,7 +9,8 @@ const VisaSchema = new mongoose.Schema({
             default: 'Pending'
         },
         feedback: String,
-        url: String
+        url: String,
+        previewUrl: String
     },
     optEAD: {
         status: {
@@ -18,7 +19,8 @@ const VisaSchema = new mongoose.Schema({
             default: 'Pending'
         },
         feedback: String,
-        url: String
+        url: String,
+        previewUrl: String
     },
     i983: {
         status: {
@@ -28,6 +30,7 @@ const VisaSchema = new mongoose.Schema({
         },
         feedback: String,
         filledFormUrl: String,
+        previewUrl: String,
         // should have two template for downloading
         emptyTemplateUrl: {
             type: String,
@@ -45,7 +48,8 @@ const VisaSchema = new mongoose.Schema({
             default: 'Pending'
         },
         feedback: String,
-        url: String
+        url: String,
+        previewUrl: String,
     }
 })
 

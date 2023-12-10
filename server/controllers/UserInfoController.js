@@ -245,4 +245,128 @@ const updateUserInfo = async (req, res) => {
   }
 };
 
-module.exports = { getUserInfo, updateUserInfo };
+const updateFiles = async (req, res) => {
+  const updateUserInfo = async (req, res) => {
+    try {
+      const { files } = req;
+  
+      let userId;
+  
+      if (req.headers.cookie) {
+        const cookie = req.headers.cookie;
+        const token = cookie.slice(6);
+        userId = decodeToken(token);
+      }
+  
+      const user = await User.findById(userId).populate('application');
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      // const application = user.application;
+      const applicationID = user.application._id;
+      const application = await Application.findById(applicationID);
+  
+      const uploadPromises = Object.keys(files).map(async (key) => {
+        if (Array.isArray(files[key])) {
+          const file = files[key][0];
+          // console.log(file)
+          const fileName = file.fieldname;
+          if (fileName === "optReceiptUrl") {
+            const params = {
+              Bucket: "my-onboarding-project",
+              Key: `${file.originalname}`,
+              Body: fs.createReadStream(path.normalize(file.path)),
+              ACL: "public-read",
+            };
+  
+            return new Promise((resolve, reject) => {
+              s3.upload(params, async (err, data) => {
+                if (err) {
+                  // console.log(params);
+                  console.error("Error uploading file:", err);
+                  reject(err);
+                } else {
+                  console.log("File uploaded successfully:", data.Location);
+  
+                  application[`${fileName}`] = data.Location;
+  
+                  const previewParams = {
+                    Bucket: "my-onboarding-project",
+                    Key: `${file.originalname}`,
+                    ResponseContentType: "application/pdf",
+                    ResponseContentDisposition: "inline",
+                  };
+  
+                  const previewUrl = s3.getSignedUrl("getObject", previewParams);
+                  application[`optReceiptUrlPreview`] = previewUrl;
+                  resolve();
+                }
+              });
+            });
+          } else {
+            const fileData = fs.readFileSync(file.path);
+            const params = {
+              Bucket: "my-onboarding-project",
+              Key: `${file.originalname}`,
+              Body: fileData,
+              ContentType: file.mimetype,
+              ACL: "public-read",
+            };
+  
+            return new Promise((resolve, reject) => {
+              s3.upload(params, async (err, data) => {
+                if (err) {
+                  // console.log(params);
+                  console.error("Error uploading file:", err);
+                  reject(err);
+                } else {
+                  console.log("File uploaded successfully:", data.Location);
+  
+                  application[`${fileName}`] = data.Location;
+                  if (fileName === "licenseCopyUrl") {
+                    const previewParams = {
+                      Bucket: "my-onboarding-project",
+                      Key: `${file.originalname}`,
+                      ResponseContentType: "image/jpeg",
+                      ResponseContentDisposition: "inline",
+                    };
+  
+                    const previewUrl = s3.getSignedUrl(
+                      "getObject",
+                      previewParams
+                    );
+                    application[`${fileName}Preview`] = previewUrl;
+                  }
+                  resolve();
+                  //   console.log(applicationDetails);
+                }
+              });
+            });
+          }
+        }
+      });
+      try {
+          await Promise.all(uploadPromises);
+        await application.save();
+
+        await application.save();
+        // console.log(savedApplication.optReceiptUrl);
+        res
+          .status(201)
+          .json({ message: "Personal information updated successfully" });
+      } catch (error) {
+        console.error("Error updating personal information:", error);
+        res
+          .status(500)
+          .json({ message: "Failed to update personal information" });
+      }
+  
+      // res.json({ message: 'Personal information updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+}
+
+module.exports = { getUserInfo, updateUserInfo, updateFiles };

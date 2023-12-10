@@ -584,11 +584,18 @@ const getAllHouses = async (req, res) => {
     // Fetch all houses from MongoDB and populate references
     const houses = await House.find().populate({
       path: "residents facilityReports",
-      populate: {
-        path: "application", // Specify the field you want to populate
-        model: "User",
-        options: { strictPopulate: false }, // Set strictPopulate to false
-      },
+      populate: [
+        {
+          path: "application",
+          model: "User",
+          options: { strictPopulate: false },
+        },
+        {
+          path: "comments",
+          model: "Comment",
+          options: { strictPopulate: false },
+        },
+      ],
     });
     res.json(houses);
   } catch (error) {
