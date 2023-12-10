@@ -119,7 +119,7 @@ const submitApplication = async (req, res) => {
 				if (fileName === 'optReceiptUrl') {
 
 					const params = {
-						Bucket: 'my-onboarding-project',
+						Bucket: 'revsawsbucket',
 						Key: `${file.originalname}`,
 						Body: fs.createReadStream(path.normalize(file.path)),
 						ACL: 'public-read'
@@ -155,7 +155,7 @@ const submitApplication = async (req, res) => {
 				} else {
 					const fileData = fs.readFileSync(file.path);
 					const params = {
-						Bucket: 'my-onboarding-project',
+						Bucket: 'revsawsbucket',
 						Key: `${file.originalname}`,
 						Body: fileData,
 						ContentType: file.mimetype,
