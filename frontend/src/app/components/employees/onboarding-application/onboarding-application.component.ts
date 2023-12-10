@@ -226,6 +226,7 @@ export class OnboardingApplicationComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Application submitted successfully:', response);
+          this.router.navigate(['/personal-information']);
         },
         error: (error) => {
           console.error('Error submitting application:', error);
