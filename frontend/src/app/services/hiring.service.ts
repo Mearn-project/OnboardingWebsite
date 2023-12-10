@@ -49,10 +49,10 @@ export class HiringService {
   }
 
   approveApplication(id: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/applications/approve/${id}`, {}, { headers: this.getHeaders() });
+    return this.http.put<any>(`${this.apiUrl}/applications/${id}/approve`, {}, { headers: this.getHeaders() });
   }
 
   rejectApplication(id: string, feedback: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/applications/reject/${id}`, { feedback }, { headers: this.getHeaders() });
+    return this.http.put<any>(`${this.apiUrl}/applications/${id}/reject`, { feedback }, { headers: this.getHeaders() });
   }
 }

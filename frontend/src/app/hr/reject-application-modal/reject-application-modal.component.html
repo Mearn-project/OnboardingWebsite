@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Reject Application</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Feedback</mat-label>
+    <textarea matInput [(ngModel)]="feedback"></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onSubmit()">Submit</button>
+</mat-dialog-actions>

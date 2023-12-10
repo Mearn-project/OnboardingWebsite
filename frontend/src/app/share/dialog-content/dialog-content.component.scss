@@ -1,0 +1,30 @@
+mat-card {
+  margin: 0px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      color: green;
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    mat-card-title {
+      font-size: 24px;
+      color: #333;
+    }
+  }
+
+  mat-card-content {
+    p {
+      font-size: 16px;
+      margin-top: 15px;
+    }
+  }
+}

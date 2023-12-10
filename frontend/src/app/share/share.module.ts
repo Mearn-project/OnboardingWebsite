@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from "@angular/forms";
 
 import { LoginComponent } from './login/login.component';
@@ -38,6 +39,7 @@ import { StoreModule } from '@ngrx/store';
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
     ReactiveFormsModule,
   ],
   exports: [

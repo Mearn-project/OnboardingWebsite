@@ -1,6 +1,10 @@
 <div class="container">
-  <h1>Welcome, HR {{ (username$ | async) ?? 'Visitor' }}!</h1>
-  <button (click)="logout()">Logout</button>
+  <div class="header">
+    <h1>Welcome, HR {{ (username$ | async) ?? 'Visitor' }}!</h1>
+    <button mat-button (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon> Logout
+    </button>
+  </div>
 
   <div class="links-container">
     <a mat-card routerLink="/employee-profiles" class="link-card">

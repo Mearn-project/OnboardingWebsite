@@ -30,6 +30,7 @@ import { HrRoutingModule } from './hr-routing.module';
 import { StoreModule } from '@ngrx/store';
 import { TokenModalComponent } from './token-modal/token-modal.component';
 import { ApplicationModalComponent } from './application-modal/application-modal.component';
+import { RejectApplicationModalComponent } from './reject-application-modal/reject-application-modal.component';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { ApplicationModalComponent } from './application-modal/application-modal
     TokenModalComponent,
     ApplicationModalComponent,
     HouseSummaryModalComponent,
-    AddHouseModalComponent
+    AddHouseModalComponent,
+    RejectApplicationModalComponent
   ],
   imports: [
     HrRoutingModule,

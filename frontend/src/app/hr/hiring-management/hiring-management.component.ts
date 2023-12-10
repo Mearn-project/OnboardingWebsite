@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TokenModalComponent } from '../token-modal/token-modal.component';
 import { Application } from '../../models/application.model';
 import { ApplicationModalComponent } from '../application-modal/application-modal.component';
+import { RejectApplicationModalComponent } from '../reject-application-modal/reject-application-modal.component';
 
 @Component({
   selector: 'app-hiring-management',
@@ -83,9 +84,25 @@ export class HiringManagementComponent implements OnInit {
     });
   }
 
-  rejectApplication(id: string, feedback: string) {
-    this.hiringService.rejectApplication(id, feedback).subscribe(() => {
-      this.loadApplicationsByStatus();
+  // rejectApplication(id: string, feedback: string) {
+  //   this.hiringService.rejectApplication(id, feedback).subscribe(() => {
+  //     this.loadApplicationsByStatus();
+  //   });
+  // }
+
+  rejectApplication(id: string) {
+    const dialogRef = this.dialog.open(RejectApplicationModalComponent, {
+      width: '500px',
+      data: { applicationId: id }
+    });
+
+    dialogRef.afterClosed().subscribe(feedback => {
+      if (feedback) {
+        this.hiringService.rejectApplication(id, feedback).subscribe(() => {
+          this.loadApplicationsByStatus();
+        });
+      }
     });
   }
+
 }
