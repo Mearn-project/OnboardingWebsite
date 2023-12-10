@@ -47,18 +47,20 @@ const updateVisaInfo = async (req, res) => {
     // const updatedFile = req.body;
     const { files } = req;
     const user = await User.findById(userId).populate("visa");
-    if (!user) {
+    const visa = await Visa.findById(user.visa._id);
+    if (!visa) {
       return res.status(404).json({ message: "User not found" });
     }
 
     let fileUrl = "";
+    let updatedData = "";
 
     const uploadPromises = Object.keys(files).map(async (key) => {
       if (Array.isArray(files[key])) {
         const file = files[key][0];
         // console.log(file)
 
-        const fileName = file.fieldname;
+        updatedData = file.fieldname;
 
         const params = {
           Bucket: "revsawsbucket",
@@ -88,37 +90,38 @@ const updateVisaInfo = async (req, res) => {
     try {
       await Promise.all(uploadPromises);
       // console.log(applicationDetails)
+      console.log(fileUrl);
 
       if (updatedData === "optReceipt") {
-        user.visa.optReceipt = {
+        visa.optReceipt = {
           status: "Pending",
           feedback: "",
           url: fileUrl,
         };
       }
       if (updatedData === "optEAD") {
-        user.visa.optEAD = {
+        visa.optEAD = {
           status: "Pending",
           feedback: "",
           url: fileUrl,
         };
       }
       if (updatedData === "i983") {
-        user.visa.i983 = {
+        visa.i983 = {
           status: "Pending",
           feedback: "",
           url: fileUrl,
         };
       }
       if (updatedData === "i20") {
-        user.visa.optEAD = {
+        visa.optEAD = {
           status: "Pending",
           feedback: "",
           url: fileUrl,
         };
       }
 
-      await user.save();
+      await visa.save();
 
       res.json({ message: "Visa status updated successfully" });
     } catch (error) {

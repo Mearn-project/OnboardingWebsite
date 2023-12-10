@@ -130,19 +130,19 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
     if (inputElement.files && inputElement.files.length > 0) {
       const file = inputElement.files[0];
       if (file) {
-        this.updateVisaStatusPostUpload(documentType);
+        // this.updateVisaStatusPostUpload(documentType);
         // TODO: Upload file
-        // this.visaStatusService.uploadDocument(documentType, file).subscribe(
-        //   (response) => {
-        //     // Handle successful upload
-        //     console.log('Upload successful', response);
-        //     this.updateVisaStatusPostUpload(documentType);
-        //   },
-        //   (error) => {
-        //     // Handle upload error
-        //     console.error('Upload failed', error);
-        //   }
-        // );
+        this.visaStatusService.uploadDocument(documentType, file).subscribe(
+          (response) => {
+            // Handle successful upload
+            console.log('Upload successful', response);
+            this.updateVisaStatusPostUpload(documentType);
+          },
+          (error) => {
+            // Handle upload error
+            console.error('Upload failed', error);
+          }
+        );
       }
     }
   }
