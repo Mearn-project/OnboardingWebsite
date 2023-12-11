@@ -17,7 +17,7 @@
     button {
       font-size: 1em;
       padding: 10px 20px;
-      background-color: #4CAF50;
+      background-color: purple;
       color: white;
       border: none;
       border-radius: 5px;
@@ -30,25 +30,25 @@
       }
 
       &:hover {
-        background-color: #45a049;
+        background-color: rgb(78, 3, 78);
       }
     }
   }
 
-  button {
-    font-size: 1em;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  // button {
+  //   font-size: 1em;
+  //   padding: 10px 20px;
+  //   background-color: #4CAF50;
+  //   color: white;
+  //   border: none;
+  //   border-radius: 5px;
+  //   cursor: pointer;
+  //   transition: background-color 0.3s ease;
 
-    &:hover {
-      background-color: #45a049;
-    }
-  }
+  //   &:hover {
+  //     background-color: #45a049;
+  //   }
+  // }
 
   .links-container {
     display: flex;

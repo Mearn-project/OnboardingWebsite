@@ -86,6 +86,7 @@ const updateVisaInfo = async (req, res) => {
                 Key: `${file.originalname}`,
                 ResponseContentType: "application/pdf",
                 ResponseContentDisposition: "inline",
+                Expires: 3600
               };
 
               preview = s3.getSignedUrl("getObject", previewParams);

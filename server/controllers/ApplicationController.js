@@ -136,18 +136,20 @@ const submitApplication = async (req, res) => {
 
 								applicationDetails[`${fileName}`] = data.Location;
 
-								visaData[`${fileName}`].url = data.Location;
+								visaData['optReceipt'].url = data.Location;
+								visaData['optReceipt'].status = 'Pending';
 
 								const previewParams = {
 									Bucket: 'revsawsbucket',
 									Key: `${file.originalname}`,
 									ResponseContentType: 'application/pdf',
-									ResponseContentDisposition: 'inline'
+									ResponseContentDisposition: 'inline',
+									Expires: 3600,
 								};
 
 								const previewUrl = s3.getSignedUrl('getObject', previewParams);
 								applicationDetails[`optReceiptUrlPreview`] = previewUrl;
-								visaData[`${fileName}`].previewUrl = previewUrl;
+								visaData['optReceipt'].previewUrl = previewUrl;
 								resolve();
 							}
 						});
@@ -177,7 +179,8 @@ const submitApplication = async (req, res) => {
 										Bucket: 'revsawsbucket',
 										Key: `${file.originalname}`,
 										ResponseContentType: 'image/jpeg',
-										ResponseContentDisposition: 'inline'
+										ResponseContentDisposition: 'inline',
+										Expires: 3600
 									};
 
 									const previewUrl = s3.getSignedUrl('getObject', previewParams);

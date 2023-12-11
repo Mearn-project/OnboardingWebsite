@@ -249,15 +249,15 @@ const updateFiles = async (req, res) => {
   const updateUserInfo = async (req, res) => {
     try {
       const { files } = req;
-  
+
       let userId;
-  
+
       if (req.headers.cookie) {
         const cookie = req.headers.cookie;
         const token = cookie.slice(6);
         userId = decodeToken(token);
       }
-  
+
       const user = await User.findById(userId).populate('application');
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -265,7 +265,7 @@ const updateFiles = async (req, res) => {
       // const application = user.application;
       const applicationID = user.application._id;
       const application = await Application.findById(applicationID);
-  
+
       const uploadPromises = Object.keys(files).map(async (key) => {
         if (Array.isArray(files[key])) {
           const file = files[key][0];
@@ -278,7 +278,7 @@ const updateFiles = async (req, res) => {
               Body: fs.createReadStream(path.normalize(file.path)),
               ACL: "public-read",
             };
-  
+
             return new Promise((resolve, reject) => {
               s3.upload(params, async (err, data) => {
                 if (err) {
@@ -287,16 +287,17 @@ const updateFiles = async (req, res) => {
                   reject(err);
                 } else {
                   console.log("File uploaded successfully:", data.Location);
-  
+
                   application[`${fileName}`] = data.Location;
-  
+
                   const previewParams = {
                     Bucket: "revsawsbucket",
                     Key: `${file.originalname}`,
                     ResponseContentType: "application/pdf",
                     ResponseContentDisposition: "inline",
+                    Expires: 3600
                   };
-  
+
                   const previewUrl = s3.getSignedUrl("getObject", previewParams);
                   application[`optReceiptUrlPreview`] = previewUrl;
                   resolve();
@@ -312,7 +313,7 @@ const updateFiles = async (req, res) => {
               ContentType: file.mimetype,
               ACL: "public-read",
             };
-  
+
             return new Promise((resolve, reject) => {
               s3.upload(params, async (err, data) => {
                 if (err) {
@@ -321,7 +322,7 @@ const updateFiles = async (req, res) => {
                   reject(err);
                 } else {
                   console.log("File uploaded successfully:", data.Location);
-  
+
                   application[`${fileName}`] = data.Location;
                   if (fileName === "licenseCopyUrl") {
                     const previewParams = {
@@ -329,8 +330,9 @@ const updateFiles = async (req, res) => {
                       Key: `${file.originalname}`,
                       ResponseContentType: "image/jpeg",
                       ResponseContentDisposition: "inline",
+                      Expires: 3600
                     };
-  
+
                     const previewUrl = s3.getSignedUrl(
                       "getObject",
                       previewParams
@@ -360,7 +362,7 @@ const updateFiles = async (req, res) => {
           .status(500)
           .json({ message: "Failed to update personal information" });
       }
-  
+
       // res.json({ message: 'Personal information updated successfully' });
     } catch (error) {
       console.error(error);
