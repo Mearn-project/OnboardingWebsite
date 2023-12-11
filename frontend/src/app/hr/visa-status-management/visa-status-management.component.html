@@ -27,7 +27,7 @@
       <mat-cell *matCellDef="let element">
         <button mat-button *ngIf="element.needsApproval" (click)="approveDocument(element.visaId, element.currentStep)">Approve</button>
         <button mat-button *ngIf="element.needsApproval" (click)="rejectDocument(element.visaId, element.currentStep, 'Your feedback')">Reject</button>
-        <button mat-button *ngIf="!element.needsApproval" (click)="sendNotification(element.employeeId)">Send Notification</button>
+        <button mat-button *ngIf="!element.needsApproval" (click)="sendNotification(element.email)">Send Notification</button>
       </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

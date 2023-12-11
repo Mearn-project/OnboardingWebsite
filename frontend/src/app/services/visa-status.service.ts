@@ -51,6 +51,6 @@ getAllVisaStatuses(): Observable<VisaStatus[]> {
 
   sendNotification(emailAddress: string): Observable<any> {
     const emailData = { email: emailAddress };
-    return this.http.post(`${this.apiUrl}/register`, emailData, { headers: this.getHeaders() });
+    return this.http.post(`${this.apiUrl}/sendNotification`, emailData, { headers: this.getHeaders() });
   }
 }

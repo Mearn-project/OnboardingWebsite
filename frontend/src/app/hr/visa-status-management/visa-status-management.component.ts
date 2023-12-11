@@ -91,9 +91,9 @@ export class VisaStatusManagementComponent implements OnInit {
     });
   }
 
-  sendNotification(employeeId: string): void {
-    this.visaStatusService.sendNotification(employeeId).subscribe(() => {
-      console.log('Notification sent to employee with ID:', employeeId);
+  sendNotification(email: string): void {
+    this.visaStatusService.sendNotification(email).subscribe(() => {
+      console.log('Notification sent to employee with ID:', email);
     });
   }
 
