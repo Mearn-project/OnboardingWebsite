@@ -19,7 +19,7 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
         feedback: '',
         isVisible: false,
       },
-      optEad: {
+      optEAD: {
         status: '',
         statusMessage: '',
         feedback: '',
@@ -56,16 +56,16 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
           fetchedData.optReceipt.status
         );
 
-        this.visaStatus.optEad.isVisible =
+        this.visaStatus.optEAD.isVisible =
           this.visaStatus.optReceipt.status === 'Approved';
-        this.visaStatus.optEad.status = fetchedData.optEAD.status;
-        this.visaStatus.optEad.feedback = fetchedData.optEAD.feedback;
-        this.visaStatus.optEad.statusMessage = this.getStatusMessage(
+        this.visaStatus.optEAD.status = fetchedData.optEAD.status;
+        this.visaStatus.optEAD.feedback = fetchedData.optEAD.feedback;
+        this.visaStatus.optEAD.statusMessage = this.getStatusMessage(
           fetchedData.optEAD.status
         );
 
         this.visaStatus.i983.isVisible =
-          this.visaStatus.optEad.status === 'Approved';
+          this.visaStatus.optEAD.status === 'Approved';
         this.visaStatus.i983.status = fetchedData.i983.status;
         this.visaStatus.i983.feedback = fetchedData.i983.feedback;
         this.visaStatus.i983.statusMessage = this.getStatusMessage(
@@ -181,8 +181,8 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
 
   proceedToNext(nextDocumentType: string): void {
     switch (nextDocumentType) {
-      case 'optEad':
-        this.visaStatus.optEad.isVisible = true;
+      case 'optEAD':
+        this.visaStatus.optEAD.isVisible = true;
         break;
       case 'i983':
         this.visaStatus.i983.isVisible = true;

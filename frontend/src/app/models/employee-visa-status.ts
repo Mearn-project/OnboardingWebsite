@@ -5,7 +5,7 @@ export interface EmployeeVisaStatus {
     feedback: string;
     isVisible: Boolean;
   };
-  optEad: {
+  optEAD: {
     status: string;
     statusMessage: string;
     feedback: string;

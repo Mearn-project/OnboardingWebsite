@@ -17,6 +17,7 @@ export class PersonalInformationComponent implements OnInit {
   personalInfoForm: FormGroup;
   nameForm: FormGroup;
   documents: Array<Doc>;
+  currentSection: EditModeKeys;
   editMode: { [key in EditModeKeys]: boolean } = {
     name: false,
     address: false,
@@ -35,6 +36,7 @@ export class PersonalInformationComponent implements OnInit {
     this.personalInfoForm = new FormGroup({});
     this.nameForm = new FormGroup({});
     this.documents = [];
+    this.currentSection = 'name';
   }
 
   ngOnInit(): void {
@@ -135,6 +137,8 @@ export class PersonalInformationComponent implements OnInit {
 
   toggleEdit(section: EditModeKeys): void {
     this.editMode[section] = !this.editMode[section];
+    this.currentSection = section;
+    console.log('after toggle edit: ', this.currentSection);
   }
 
   save(section: EditModeKeys): void {
@@ -142,12 +146,8 @@ export class PersonalInformationComponent implements OnInit {
     const sectionGroup = this.personalInfoForm.get(section);
     const formData = new FormData();
     for (const controlName of Object.keys(sectionGroup?.value)) {
-      console.log('control Name: ', controlName);
-      console.log('value: ', sectionGroup?.value.controlName);
       formData.append(controlName, sectionGroup?.value.controlName);
     }
-    console.log('raw value: ', sectionGroup?.value);
-    console.log('form data: ', formData);
     if (sectionGroup?.valid) {
       this.userService.updateSection(section, sectionGroup.value).subscribe({
         next: () => {
@@ -155,7 +155,6 @@ export class PersonalInformationComponent implements OnInit {
           console.log('Update successful');
           this.editMode[section] = false;
           this.loadUserInfo();
-          // window.location.reload();
         },
         error: () => {
           // Handle errors here, e.g., showing an error message
@@ -170,17 +169,13 @@ export class PersonalInformationComponent implements OnInit {
       width: '250px',
       data: { message: 'Discard all changes?' },
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result == 'yes') {
-        console.log('returned yes');
-        // TODO: reset initial data
         this.initializeForm(); // Reset form with initial data
-        this.editMode[section] = false;
+        this.editMode[this.currentSection] = false;
+        this.loadUserInfo();
       }
     });
-    // Implement logic to reset the form or reload original data
-    this.editMode[section] = false;
   }
 
   loadDocuments(): void {
