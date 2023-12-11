@@ -12,7 +12,7 @@ import { EditModeKeys } from 'src/app/models/personal-info.model';
   styleUrl: './personal-information.component.scss',
 })
 export class PersonalInformationComponent implements OnInit {
-  userData?: Employee;
+  userData?: any;
   personalInfoForm: FormGroup;
   nameForm: FormGroup;
   editMode: { [key in EditModeKeys]: boolean } = {
@@ -77,22 +77,41 @@ export class PersonalInformationComponent implements OnInit {
     this.userService.getUserInfo().subscribe(
       (data) => {
         console.log(data);
+        const personalInfo = data.application;
+        const emergencyContact = personalInfo.emergencyContacts;
         this.personalInfoForm.patchValue({
           name: {
-            firstName: data.application.firstName,
-            lastName: data.application.lastName,
-            middleName: data.application.middleName,
-            preferredName: data.application.preferredName,
+            firstName: personalInfo.firstName || '',
+            lastName: personalInfo.lastName || '',
+            middleName: personalInfo.middleName || '',
+            preferredName: personalInfo.preferredName || '',
           },
-          // address: {
-          //   building: data.application.,
-          //   street: [''],
-          //   city: [''],
-          //   state: [''],
-          //   zip: [''],
-          // },
+          address: {
+            building: personalInfo.address.buildingApt || '',
+            street: personalInfo.address.street || '',
+            city: personalInfo.address.city || '',
+            state: personalInfo.address.state || '',
+            zip: personalInfo.address.zip || '',
+          },
+          contactInfo: {
+            cell: personalInfo.cellPhone || '',
+            work: personalInfo.workPhone || '',
+          },
+          employment: {
+            visaTitle: personalInfo.visaTitle || '',
+            startDate: personalInfo.startDate || '',
+            endDate: personalInfo.endDate || '',
+          },
+          emergencyContact: {
+            firstName: emergencyContact.firstName || '',
+            lastName: emergencyContact.lastName || '',
+            middleName: emergencyContact.middleName || '',
+            phone: emergencyContact.phone || '',
+            email: emergencyContact.email || '',
+            relationship: emergencyContact.relationship || '',
+          },
         });
-        this.userData = data;
+        this.userData = personalInfo;
       },
       (error) => {
         console.error('Error fetching user data:', error);
@@ -144,6 +163,7 @@ export class PersonalInformationComponent implements OnInit {
       );
     }
     this.editMode[section] = false;
+    this.loadUserInfo();
   }
 
   cancel(section: EditModeKeys): void {
