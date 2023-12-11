@@ -263,7 +263,46 @@
         <mat-card-title>Emergency Contact</mat-card-title>
         <div *ngIf="!editMode.emergencyContact; else editEmergencyContact">
           <mat-card>
-            <mat-card-content> </mat-card-content>
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item
+                  >First Name:
+                  {{
+                    userData?.application.emergencyContacts.firstName
+                  }}</mat-list-item
+                >
+                <mat-list-item
+                  >Last Name:
+                  {{
+                    userData?.application.emergencyContacts.lastName
+                  }}</mat-list-item
+                >
+                <mat-list-item
+                  >Middle Name:
+                  {{
+                    userData?.application.emergencyContacts.middleName
+                  }}</mat-list-item
+                >
+                <mat-list-item
+                  >Phone:
+                  {{
+                    userData?.application.emergencyContacts.middleName
+                  }}</mat-list-item
+                >
+                <mat-list-item
+                  >Email:
+                  {{
+                    userData?.application.emergencyContacts.email
+                  }}</mat-list-item
+                >
+                <mat-list-item
+                  >Relationship:
+                  {{
+                    userData?.application.emergencyContacts.relationShip
+                  }}</mat-list-item
+                >
+              </mat-list>
+            </mat-card-content>
           </mat-card>
           <button
             mat-raised-button
@@ -275,7 +314,7 @@
         </div>
         <ng-template #editEmergencyContact>
           <form [formGroup]="getFormGroup('emergencyContact')">
-            <!-- ... emergency contact fields using <mat-form-field> -->
+            <!-- TODO: add emergency contact form -->
             <button
               mat-raised-button
               color="primary"
