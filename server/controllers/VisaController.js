@@ -80,15 +80,15 @@ const updateVisaInfo = async (req, res) => {
               console.log("File uploaded successfully:", data.Location);
 
               fileUrl = data.Location;
-              
-              const previewParams = {
-                Bucket: 'revsawsbucket',
-                Key: `${file.originalname}`,
-                ResponseContentType: 'application/pdf',
-                ResponseContentDisposition: 'inline'
-                };
 
-                preview = s3.getSignedUrl('getObject', previewParams);
+              const previewParams = {
+                Bucket: "revsawsbucket",
+                Key: `${file.originalname}`,
+                ResponseContentType: "application/pdf",
+                ResponseContentDisposition: "inline",
+              };
+
+              preview = s3.getSignedUrl("getObject", previewParams);
 
               resolve();
             }
@@ -107,7 +107,7 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
-          previewUrl: preview
+          previewUrl: preview,
         };
       }
       if (updatedData === "optEAD") {
@@ -115,7 +115,7 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
-          previewUrl: preview
+          previewUrl: preview,
         };
       }
       if (updatedData === "i983") {
@@ -123,21 +123,24 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
-          previewUrl: preview
+          previewUrl: preview,
         };
       }
       if (updatedData === "i20") {
-        visa.optEAD = {
+        visa.i20 = {
           status: "Pending",
           feedback: "",
           url: fileUrl,
-          previewUrl: preview
+          previewUrl: preview,
         };
       }
 
       await visa.save();
 
-      res.json({ message: "Visa status updated successfully" });
+      res.json({
+        documentType: updatedData,
+        message: "Visa status updated successfully",
+      });
     } catch (error) {
       console.error("Error submitting application:", error);
       res.status(500).json({ message: "Failed to submit application" });
