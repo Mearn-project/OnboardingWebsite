@@ -139,7 +139,7 @@ const submitApplication = async (req, res) => {
 								visaData[`${fileName}`].url = data.Location;
 
 								const previewParams = {
-									Bucket: 'my-onboarding-project',
+									Bucket: 'revsawsbucket',
 									Key: `${file.originalname}`,
 									ResponseContentType: 'application/pdf',
 									ResponseContentDisposition: 'inline'
@@ -174,7 +174,7 @@ const submitApplication = async (req, res) => {
 								applicationDetails[`${fileName}`] = data.Location;
 								if (fileName === 'licenseCopyUrl') {
 									const previewParams = {
-										Bucket: 'my-onboarding-project',
+										Bucket: 'revsawsbucket',
 										Key: `${file.originalname}`,
 										ResponseContentType: 'image/jpeg',
 										ResponseContentDisposition: 'inline'

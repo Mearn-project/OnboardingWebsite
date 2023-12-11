@@ -34,12 +34,4 @@ export class EmployeeVisaStatusService {
       responseType: 'blob',
     });
   }
-
-  // Method to handle feedback or additional actions
-  submitFeedback(documentType: string, feedback: string): Observable<any> {
-    const data = { documentType, feedback };
-    return this.http.post(`${this.apiUrl}/submit-feedback`, data);
-  }
-
-  // ... other methods as needed
 }
