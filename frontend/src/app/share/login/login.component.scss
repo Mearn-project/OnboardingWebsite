@@ -3,6 +3,17 @@
   justify-content: center;
   margin-top: 100px;
 
+  mat-form-field.error {
+    mat-label {
+      color: red;
+    }
+  }
+
+  .error-message {
+    color: red;
+    margin-top: 10px;
+  }
+
   .full-width {
     width: 100%;
   }

@@ -1,19 +1,20 @@
-<div class="login-container">
+<div class="login-container" >
   <mat-card>
     <mat-card-title>Login</mat-card-title>
     <mat-card-content>
       <form (submit)="onLogin()">
-        <mat-form-field class="full-width" [ngClass]="{'error-field': loginError}">
+        <mat-form-field class="full-width" [ngClass]="{'error-field': loginError}" [class.error]="loginError">
           <mat-label>Username</mat-label>
           <input matInput placeholder="Please input username" [(ngModel)]="username" name="username">
         </mat-form-field>
 
-        <mat-form-field class="full-width" [ngClass]="{'error-field': loginError}">
+        <mat-form-field class="full-width" [ngClass]="{'error-field': loginError}" [class.error]="loginError">
           <mat-label>Password</mat-label>
           <input matInput type="password" placeholder="Please input password" [(ngModel)]="password" name="password">
         </mat-form-field>
-
-
+        <div *ngIf="loginError" class="error-message">
+          Username or password not correct
+        </div>
         <button mat-raised-button color="primary" type="submit">Login</button>
       </form>
     </mat-card-content>
