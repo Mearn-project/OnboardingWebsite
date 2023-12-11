@@ -17,3 +17,7 @@ export const loginFailure = createAction(
 
 export const logout = createAction('[Auth] Logout');
 
+export const setAuthInfo = createAction(
+  '[Auth] Set Auth Info',
+  props<{ token: string; isHR: boolean; username: string }>()
+);

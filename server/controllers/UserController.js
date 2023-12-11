@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const Email = require("../models/Email");
 const User = require('../models/User');
 const House = require('../models/House');
-const {generateToken, generateRegisterToken, decodeRegisterToken} = require('../utils/generateToken');
+const {generateToken, generateRegisterToken, decodeRegisterToken, decodeToken} = require('../utils/generateToken');
 
 require("dotenv").config({path: path.join(__dirname, '../../.env')});
 
@@ -26,7 +27,7 @@ const login = async (req, res) => {
         }
 
         const token = generateToken(user._id);
-        res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
+        res.cookie('token', token, { httpOnly: false, maxAge: 3600000 });
 
         return res.status(200).json({
             token: token,
@@ -80,46 +81,55 @@ const sendEmail = async (req, res) => {
 }
 
 const register = async (req, res) => {
-    const { username, email, password, confirmPwd} = req.body;
+    const { username, email, password, confirmPwd } = req.body;
 
     try {
-        const existingUsername = await User.findOne({username});
-        const existingEmail = await User.findOne({email});
-        if (existingUsername || existingEmail) {
-            return res.status(409).json({ message: 'User already exists'});
-        }
+      const existingUsername = await User.findOne({ username });
+      const existingEmail = await User.findOne({ email });
+      if (existingUsername || existingEmail) {
+        return res.status(409).json({ message: "User already exists" });
+      }
 
-        if (password !== confirmPwd) {
-            return res.status(401).json({ message: 'Passwords are not same'});
-        }
+      if (password !== confirmPwd) {
+        return res.status(401).json({ message: "Passwords are not same" });
+      }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({
-            username,
-            email,
-            password: hashedPassword
-        });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = new User({
+        username,
+        email,
+        password: hashedPassword,
+      });
 
-        const allHouses = await House.find({});
-        const randomInt = Math.floor(Math.random() * allHouses.length);
-        const assignedHouse = allHouses[randomInt];
-        user.housing = assignedHouse._id;
+      // Update the email status to "Registered"
+      const emailStatusUpdate = await Email.findOneAndUpdate(
+        { email },
+        { $set: { status: "Registered" } },
+        { new: true }
+      );
 
-        const createdUser = await user.save()
+      if (!emailStatusUpdate) {
+        // Handle if the email document doesn't exist
+        console.error("Email not found for update");
+        return res.status(500).json({ message: "Failed to update email status" });
+      }
 
-        assignedHouse.residents.push(createdUser._id);
-        await assignedHouse.save()
+      const allHouses = await House.find({});
+      const randomInt = Math.floor(Math.random() * allHouses.length);
+      const assignedHouse = allHouses[randomInt];
+      user.housing = assignedHouse._id;
 
+      const createdUser = await user.save();
 
-        
+      assignedHouse.residents.push(createdUser._id);
+      await assignedHouse.save();
 
-        return res.status(201).json({ message: 'User registered successfully' });
-    } catch(error) {
-        console.error('Failed to register:', error);
-        return res.status(500).json({ message: error.message });
+      return res.status(201).json({ message: "User registered successfully" });
+    } catch (error) {
+      console.error("Failed to register:", error);
+      return res.status(500).json({ message: error.message });
     }
-
-};
+  };
 
 const verifyRegistrationToken = async (req, res, next) => {
 	const { token } = req.params;
@@ -166,9 +176,10 @@ const isHR = async (userId) => {
     }
 }
 
-const parseToken = async () => {
+const parseToken = async (req, res) => {
     try {
         let userId;
+        //console.log('cookie:',req.headers.cookie)
 
         if (req.headers.cookie) {
             const cookie = req.headers.cookie;
@@ -192,7 +203,7 @@ const parseToken = async () => {
         console.error(error);
         res.status(500).json({ message: 'Failed to parse token' });
     }
-    
+
 
     return
 }

@@ -25,24 +25,26 @@ export class VisaStatusManagementComponent implements OnInit {
     this.visaStatusService.getInProgressVisaStatuses().subscribe(users => {
       this.inProgressDataSource = users.map(item => ({
         ...item,
-        currentStep: this.calculateCurrentStep(item.visa.i20.status),
-        needsApproval: this.doesStepNeedApproval(item.visa.i20.status),
+        currentStep: this.calculateCurrentStep(item.visa.optReceipt.status),
+        needsApproval: this.doesStepNeedApproval(item.visa.optReceipt.status),
       }));
-
+      console.log(this.inProgressDataSource)
       this.unfilteredDataSource = [...this.inProgressDataSource];
     });
-
     this.visaStatusService.getAllVisaStatuses().subscribe(users => {
       this.allDataSource = users;
     });
   }
 
-  calculateCurrentStep(i20Status: string): string {
-    if (i20Status === 'Uploading') {
+  calculateCurrentStep(optReceiptStatus: string): string {
+    if (optReceiptStatus === 'Uploading') {
       return 'sent registration token';
     }
-    if (i20Status === 'Pending') {
+    if (optReceiptStatus === 'Pending') {
       return 'submitted OPT receipt';
+    }
+    if (optReceiptStatus === 'Approved') {
+      return 'Approved OPT receipt';
     }
     return 'unknown';
   }
@@ -59,8 +61,8 @@ export class VisaStatusManagementComponent implements OnInit {
   }
 
 
-  doesStepNeedApproval(i20Status: string): boolean {
-    return i20Status === 'Pending';
+  doesStepNeedApproval(optReceiptStatus: string): boolean {
+    return optReceiptStatus === 'Pending';
   }
 
 
@@ -75,16 +77,20 @@ export class VisaStatusManagementComponent implements OnInit {
     }
   }
 
-  approveDocument(visaId: string, documentType: string) {
-    this.visaStatusService.approveDocument(visaId, documentType).subscribe(() => {
+  previewDocument(previewUrl: string): void {
+    window.open(previewUrl, '_blank');
+  }
+
+  approveDocument(visaId: string) {
+    this.visaStatusService.approveDocument(visaId).subscribe(() => {
       this.loadVisaStatuses();
     }, error => {
       console.error('Error approving document:', error);
     });
   }
 
-  rejectDocument(visaId: string, documentType: string, feedback: string) {
-    this.visaStatusService.rejectDocument(visaId, documentType, feedback).subscribe(() => {
+  rejectDocument(visaId: string, feedback: string) {
+    this.visaStatusService.rejectDocument(visaId, feedback).subscribe(() => {
       this.loadVisaStatuses();
     }, error => {
       console.error('Error rejecting document:', error);

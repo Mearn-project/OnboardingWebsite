@@ -1,15 +1,38 @@
 .employee-profiles {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   .mat-form-field {
-    width: 100%;
+    width: 300px;
     margin-bottom: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    .mat-input-element {
+      padding: 8px 16px;
+    }
+    .mat-icon {
+      margin-right: 8px;
+    }
+    .mat-label {
+      color: #333;
+    }
+
   }
 
   mat-table {
-    width: 100%;
     margin-top: 20px;
+    width: 100%;
 
     mat-header-cell, mat-cell {
-      padding: 8px;
+      padding: 12px 8px;
+      font-size: 14px;
+    }
+
+    mat-header-cell {
+      background-color: #e3e3e3;
+      font-weight: bold;
     }
   }
 }
+

@@ -41,12 +41,12 @@ getAllVisaStatuses(): Observable<VisaStatus[]> {
     return this.http.get<VisaStatus>(`${this.apiUrl}/visa/${userId}`, { headers: this.getHeaders() });
   }
 
-  approveDocument(visaId: string, documentType: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/visa/${visaId}/approve/${documentType}`, {}, { headers: this.getHeaders() });
+  approveDocument(visaId: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/visa/${visaId}/approve/optReceipt`, {}, { headers: this.getHeaders() });
   }
 
-  rejectDocument(visaId: string, documentType: string, feedback: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/visa/${visaId}/reject/${documentType}`, { feedback }, { headers: this.getHeaders() });
+  rejectDocument(visaId: string, feedback: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/visa/${visaId}/reject/optReceipt`, { feedback }, { headers: this.getHeaders() });
   }
 
   sendNotification(emailAddress: string): Observable<any> {
