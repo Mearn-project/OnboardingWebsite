@@ -1,4 +1,3 @@
-<p>onboarding-application works!</p>
 <form [formGroup]="onboardingForm" (ngSubmit)="submitForm()">
   <!-- Personal Information -->
   <div formGroupName="name">
@@ -43,34 +42,50 @@
 
   <!-- Profile Picture Upload -->
   <div>
-    <input type="file" name="profilePictureUrl" (change)="onFileSelect($event, 'profilePictureUrl')" enctype="multipart/form-data"/>
+    <p>Please upload a profile picture</p>
+    <input
+      type="file"
+      name="profilePictureUrl"
+      (change)="onFileSelect($event, 'profilePictureUrl')"
+      enctype="multipart/form-data"
+    />
   </div>
 
   <!-- Address -->
   <div formGroupName="address">
     <mat-form-field appearance="fill">
       <mat-label>Building/Apt</mat-label>
-      <input matInput formControlName="buildingApt" placeholder="Building/Apt" required/>
+      <input
+        matInput
+        formControlName="buildingApt"
+        placeholder="Building/Apt"
+        required
+      />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Street Name</mat-label>
-      <input matInput formControlName="street" placeholder="Street Name" required/>
+      <input
+        matInput
+        formControlName="street"
+        placeholder="Street Name"
+        required
+      />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>City</mat-label>
-      <input matInput formControlName="city" placeholder="City" required/>
+      <input matInput formControlName="city" placeholder="City" required />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>State</mat-label>
-      <input matInput formControlName="state" placeholder="State" required/>
+      <input matInput formControlName="state" placeholder="State" required />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Zip Code</mat-label>
-      <input matInput formControlName="zip" placeholder="Zip Code" required/>
+      <input matInput formControlName="zip" placeholder="Zip Code" required />
     </mat-form-field>
   </div>
 
@@ -105,7 +120,7 @@
   <!-- Email -->
   <mat-form-field>
     <mat-label>Email</mat-label>
-    <input matInput formControlName="email" placeholder="Email" required/>
+    <input matInput formControlName="email" placeholder="Email" required />
   </mat-form-field>
 
   <!-- Personal Information -->
@@ -121,7 +136,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Date of Birth</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="dob" required/>
+      <input matInput [matDatepicker]="picker" formControlName="dob" required />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
@@ -130,7 +145,9 @@
       <mat-select formControlName="gender">
         <mat-option value="Male">Male</mat-option>
         <mat-option value="Female">Female</mat-option>
-        <mat-option value="I do not wish to answer">I do not wish to answer</mat-option>
+        <mat-option value="I do not wish to answer"
+          >I do not wish to answer</mat-option
+        >
       </mat-select>
     </mat-form-field>
   </div>
@@ -154,7 +171,6 @@
       <mat-select formControlName="visaType">
         <mat-option value="F1(CPT/OPT)">F1(CPT/OPT)</mat-option>
         <mat-option value="H1-B">H1-B</mat-option>
-        <!-- ... other visa types -->
       </mat-select>
     </mat-form-field>
     <div
@@ -162,7 +178,13 @@
         onboardingForm.get('visaDetails.visaType')!.value === 'F1(CPT/OPT)'
       "
     >
-      <input type="file" name="optReceiptUrl" (change)="onFileSelect($event, 'optReceiptUrl')" enctype="multipart/form-data"/>
+      <p>Please upload your Visa Document</p>
+      <input
+        type="file"
+        name="optReceiptUrl"
+        (change)="onFileSelect($event, 'optReceiptUrl')"
+        enctype="multipart/form-data"
+      />
     </div>
     <mat-form-field>
       <mat-label>Visa Title</mat-label>
@@ -196,20 +218,18 @@
     </mat-form-field>
   </div>
 
-    <!-- Driver's License -->
-    <div formGroupName="driverLicense">
-      <mat-form-field>
-        <mat-label>Do you have a driver's license?</mat-label>
-        <mat-select formControlName="hasLicense" required>
-          <mat-option value="Yes">Yes</mat-option>
-          <mat-option value="No">No</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div
-        *ngIf="
-          onboardingForm.get('driverLicense.hasLicense')!.value === 'Yes'
-        "
-      >
+  <!-- Driver's License -->
+  <div formGroupName="driverLicense">
+    <mat-form-field>
+      <mat-label>Do you have a driver's license?</mat-label>
+      <mat-select formControlName="hasLicense" required>
+        <mat-option value="Yes">Yes</mat-option>
+        <mat-option value="No">No</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div
+      *ngIf="onboardingForm.get('driverLicense.hasLicense')!.value === 'Yes'"
+    >
       <mat-form-field>
         <mat-label>License Number</mat-label>
         <input
@@ -233,7 +253,12 @@
         ></mat-datepicker-toggle>
         <mat-datepicker #licenseExpPicker></mat-datepicker>
       </mat-form-field>
-      <input type="file" name="licenseCopyUrl" (change)="onFileSelect($event, 'licenseCopyUrl')" enctype="multipart/form-data"/>
+      <input
+        type="file"
+        name="licenseCopyUrl"
+        (change)="onFileSelect($event, 'licenseCopyUrl')"
+        enctype="multipart/form-data"
+      />
     </div>
   </div>
 
@@ -265,11 +290,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Reference phone</mat-label>
-      <input
-        matInput
-        formControlName="phone"
-        placeholder="Reference phone"
-      />
+      <input matInput formControlName="phone" placeholder="Reference phone" />
     </mat-form-field>
     <mat-form-field>
       <mat-label>Reference Email address</mat-label>
