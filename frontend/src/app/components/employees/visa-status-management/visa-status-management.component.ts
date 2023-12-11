@@ -101,6 +101,7 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
 
   uploadDocument(documentType: string): void {
     // Open a file upload dialog and obtain the file
+    console.log('uploading...: ', documentType);
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.click();
     } else {
@@ -111,18 +112,28 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
     fileInput.onchange = () => {
       if (fileInput.files && fileInput.files.length > 0) {
         const file = fileInput.files[0];
-        this.visaStatusService.uploadDocument(documentType, file).subscribe(
-          (response) => {
+        console.log('This documentType: ', documentType);
+        this.visaStatusService.uploadDocument(documentType, file).subscribe({
+          next: (response) => {
             console.log('Upload successful', response);
-            this.updateVisaStatusPostUpload(documentType);
+            this.updateVisaStatusPostUpload(response.documentType);
           },
-          (error) => {
+          error: (error) => {
             console.error('Upload failed', error);
-          }
-        );
+          },
+        });
       }
       fileInput.click();
     };
+    fileInput.click();
+  }
+
+  private updateVisaStatusPostUpload(documentType: string): void {
+    console.log('documentType is: ', documentType);
+    const section = documentType as keyof EmployeeVisaStatus;
+    console.log('section being update: ', section);
+    this.visaStatus[section].status = 'pending';
+    this.visaStatus[section].statusMessage = this.getStatusMessage('Pending');
   }
 
   onFileSelected(event: Event, documentType: string): void {
@@ -130,25 +141,19 @@ export class EmployeeVisaStatusManagementComponent implements OnInit {
     if (inputElement.files && inputElement.files.length > 0) {
       const file = inputElement.files[0];
       if (file) {
-        this.visaStatusService.uploadDocument(documentType, file).subscribe(
-          (response) => {
+        this.visaStatusService.uploadDocument(documentType, file).subscribe({
+          next: (response) => {
             // Handle successful upload
             console.log('Upload successful', response);
             this.updateVisaStatusPostUpload(documentType);
           },
-          (error) => {
+          error: (error) => {
             // Handle upload error
             console.error('Upload failed', error);
-          }
-        );
+          },
+        });
       }
     }
-  }
-
-  private updateVisaStatusPostUpload(documentType: string): void {
-    const section = documentType as keyof EmployeeVisaStatus;
-    this.visaStatus[section].status = 'pending';
-    this.visaStatus[section].statusMessage = this.getStatusMessage('Pending');
   }
 
   downloadDocument(documentType: string): void {

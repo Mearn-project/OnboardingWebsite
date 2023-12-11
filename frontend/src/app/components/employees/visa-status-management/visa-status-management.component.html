@@ -6,14 +6,13 @@
     <div>
       <h3>OPT Receipt</h3>
       <p>{{ visaStatus.optReceipt.statusMessage }}</p>
-      <button
-        mat-raised-button
-        color="primary"
+      <input
+        type="file"
+        name="optReceipt"
         *ngIf="visaStatus.optReceipt.status === 'Uploading'"
-        (click)="uploadDocument('optReceipt')"
-      >
-        Upload OPT Receipt
-      </button>
+        (change)="onFileSelected($event, 'optReceipt')"
+        enctype="multipart/form-data"
+      />
       <input
         type="file"
         #fileInput
@@ -34,7 +33,6 @@
       <p *ngIf="visaStatus.optReceipt.status === 'Rejected'">
         {{ visaStatus.optReceipt.feedback }}
       </p>
-      <!-- TODO: provide a button after rejected to re submit document -->
     </div>
 
     <!-- OPT EAD Section -->
@@ -46,14 +44,13 @@
     >
       <h3>OPT EAD</h3>
       <p>{{ visaStatus.optEad.statusMessage }}</p>
-      <button
-        mat-raised-button
-        color="primary"
+      <input
+        type="file"
+        name="optEad"
         *ngIf="visaStatus.optEad.status === 'Uploading'"
-        (click)="uploadDocument('optEad')"
-      >
-        Upload OPT EAD
-      </button>
+        (change)="onFileSelected($event, 'optEad')"
+        enctype="multipart/form-data"
+      />
       <button
         mat-raised-button
         *ngIf="
@@ -73,14 +70,13 @@
     <div *ngIf="visaStatus.i983.isVisible">
       <h3>I-983</h3>
       <p>{{ visaStatus.i983.statusMessage }}</p>
-      <button
-        mat-raised-button
-        color="primary"
+      <input
+        type="file"
+        name="i983"
         *ngIf="visaStatus.i983.status === 'Uploading'"
-        (click)="uploadDocument('i983')"
-      >
-        Upload I-983 Form
-      </button>
+        (change)="onFileSelected($event, 'i983')"
+        enctype="multipart/form-data"
+      />
       <button
         mat-raised-button
         *ngIf="
@@ -102,14 +98,13 @@
     >
       <h3>I-20</h3>
       <p>{{ visaStatus.i20.statusMessage }}</p>
-      <button
-        mat-raised-button
-        color="primary"
+      <input
+        type="file"
+        name="i20"
         *ngIf="visaStatus.i20.status === 'Uploading'"
-        (click)="uploadDocument('i20')"
-      >
-        Upload I-20 Form
-      </button>
+        (change)="onFileSelected($event, 'i20')"
+        enctype="multipart/form-data"
+      />
       <p *ngIf="visaStatus.i20.status === 'Approved'">
         All documents have been approved.
       </p>
