@@ -210,7 +210,35 @@
           <form [formGroup]="getFormGroup('employment')">
             <mat-form-field appearance="fill">
               <mat-label>Work Phone Number</mat-label>
-              <input matInput formControlName="work" />
+              <input matInput formControlName="visaTitle" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Choose the start date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker1"
+                formControlName="startDate"
+              />
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="picker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Choose the end date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker2"
+                formControlName="endDate"
+              />
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="picker2"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
             </mat-form-field>
             <button
               mat-raised-button
