@@ -3,13 +3,11 @@ export type EditModeKeys =
   | 'address'
   | 'contactInfo'
   | 'employment'
-  | 'emergencyContact';
+  | 'emergencyContact'
+  | 'documents';
 
-export interface UserInfo {
-  name: {
-    firstName: String;
-    lastName: String;
-    middleName: String;
-    prefereedName: String;
-  };
+export interface Doc {
+  name: string;
+  url: string;
+  previewUrl: string;
 }

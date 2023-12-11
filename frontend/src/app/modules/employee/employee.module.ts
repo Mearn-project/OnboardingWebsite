@@ -9,7 +9,7 @@ import { HousingComponent } from '../../components/employees/housing/housing.com
 import { HttpClientModule } from '@angular/common/http';
 import { EmployeeVisaStatusManagementComponent } from '../../components/employees/visa-status-management/visa-status-management.component';
 import { EmployeeRoutingModule } from './employee.routing.module';
-import { EmployeeNavigationComponent } from 'src/app/components/employees/employee-navigation/employee-navigation.component';
+import { EmployeeNavigationComponent } from '../../components/employees/employee-navigation/employee-navigation.component';
 
 @NgModule({
   declarations: [
