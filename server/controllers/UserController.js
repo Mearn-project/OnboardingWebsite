@@ -166,9 +166,38 @@ const isHR = async (userId) => {
     }
 }
 
+const parseToken = async () => {
+    try {
+        let userId;
+
+        if (req.headers.cookie) {
+            const cookie = req.headers.cookie;
+            const token = cookie.slice(6);
+            userId = decodeToken(token);
+        }
+
+        const user = await User.findById(userId);
+        // console.log(req.headers)
+
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({
+            username: user.username,
+            isHR: user.isHR
+        })
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to parse token' });
+    }
+    
+
+    return
+}
 
 
 
 
-
-module.exports = { register, sendEmail, verifyRegistrationToken, login, logout, isHR };
+module.exports = { register, sendEmail, verifyRegistrationToken, login, logout, isHR, parseToken };
