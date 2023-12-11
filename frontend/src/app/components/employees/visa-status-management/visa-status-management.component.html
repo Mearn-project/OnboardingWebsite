@@ -1,1 +1,122 @@
-<p>visa-status-management works!</p>
+<app-employee-navigation />
+<mat-card>
+  <mat-card-title>Visa Status Management</mat-card-title>
+  <mat-card-content>
+    <!-- OPT Receipt Section -->
+    <div>
+      <h3>OPT Receipt</h3>
+      <p>{{ visaStatus.optReceipt.statusMessage }}</p>
+      <button
+        mat-raised-button
+        color="primary"
+        *ngIf="visaStatus.optReceipt.status === 'Uploading'"
+        (click)="uploadDocument('optReceipt')"
+      >
+        Upload OPT Receipt
+      </button>
+      <input
+        type="file"
+        #fileInput
+        style="display: none"
+        (change)="onFileSelected($event, 'optReceipt')"
+      />
+      <button
+        mat-raised-button
+        *ngIf="
+          visaStatus.optReceipt.status === 'Approved' &&
+          !visaStatus.optEad.isVisible
+        "
+        (click)="proceedToNext('optEad')"
+      >
+        Proceed to OPT EAD
+      </button>
+      <!-- Display HR feedback if Rejected -->
+      <p *ngIf="visaStatus.optReceipt.status === 'Rejected'">
+        {{ visaStatus.optReceipt.feedback }}
+      </p>
+      <!-- TODO: provide a button after rejected to re submit document -->
+    </div>
+
+    <!-- OPT EAD Section -->
+    <div
+      *ngIf="
+        visaStatus.optEad.isVisible ||
+        visaStatus.optReceipt.status === 'Approved'
+      "
+    >
+      <h3>OPT EAD</h3>
+      <p>{{ visaStatus.optEad.statusMessage }}</p>
+      <button
+        mat-raised-button
+        color="primary"
+        *ngIf="visaStatus.optEad.status === 'Uploading'"
+        (click)="uploadDocument('optEad')"
+      >
+        Upload OPT EAD
+      </button>
+      <button
+        mat-raised-button
+        *ngIf="
+          visaStatus.optEad.status === 'Approved' && !visaStatus.i983.isVisible
+        "
+        (click)="proceedToNext('i983')"
+      >
+        Proceed to I-983 Form
+      </button>
+      <!-- Display HR feedback if Rejected -->
+      <p *ngIf="visaStatus.optEad.status === 'Rejected'">
+        {{ visaStatus.optEad.feedback }}
+      </p>
+    </div>
+
+    <!-- I-983 Section -->
+    <div *ngIf="visaStatus.i983.isVisible">
+      <h3>I-983</h3>
+      <p>{{ visaStatus.i983.statusMessage }}</p>
+      <button
+        mat-raised-button
+        color="primary"
+        *ngIf="visaStatus.i983.status === 'Uploading'"
+        (click)="uploadDocument('i983')"
+      >
+        Upload I-983 Form
+      </button>
+      <button
+        mat-raised-button
+        *ngIf="
+          visaStatus.i983.status === 'Approved' && !visaStatus.i20.isVisible
+        "
+        (click)="proceedToNext('i20')"
+      >
+        Proceed to I-20 Form
+      </button>
+      <!-- Display HR feedback if Rejected -->
+      <p *ngIf="visaStatus.i983.status === 'Rejected'">
+        {{ visaStatus.i983.feedback }}
+      </p>
+    </div>
+
+    <!-- I-20 Section -->
+    <div
+      *ngIf="visaStatus.i20.isVisible || visaStatus.i983.status === 'Approved'"
+    >
+      <h3>I-20</h3>
+      <p>{{ visaStatus.i20.statusMessage }}</p>
+      <button
+        mat-raised-button
+        color="primary"
+        *ngIf="visaStatus.i20.status === 'Uploading'"
+        (click)="uploadDocument('i20')"
+      >
+        Upload I-20 Form
+      </button>
+      <p *ngIf="visaStatus.i20.status === 'Approved'">
+        All documents have been approved.
+      </p>
+      <!-- Display HR feedback if Rejected -->
+      <p *ngIf="visaStatus.i20.status === 'Rejected'">
+        {{ visaStatus.i20.feedback }}
+      </p>
+    </div>
+  </mat-card-content>
+</mat-card>
