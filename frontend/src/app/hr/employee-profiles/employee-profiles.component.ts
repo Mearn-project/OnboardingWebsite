@@ -24,6 +24,7 @@ export class EmployeeProfilesComponent implements OnInit {
         phoneNumber: e.application.cellPhone,
         ssn: e.application.ssn
       }));
+      // console.log(this.employees)
       this.filteredEmployees = this.employees;
     });
   }

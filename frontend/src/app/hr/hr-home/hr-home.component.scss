@@ -1,10 +1,38 @@
 .container {
   text-align: center;
 
-  h1 {
-    font-size: 2.5em;
-    color: #333;
+  .header {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
     margin-bottom: 20px;
+    padding: 0 20px;
+
+    h1 {
+      font-size: 1.5em;
+      color: #333;
+      margin: 20px 0;
+    }
+
+    button {
+      font-size: 1em;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+      mat-icon {
+        margin-right: 5px;
+      }
+
+      &:hover {
+        background-color: #45a049;
+      }
+    }
   }
 
   button {

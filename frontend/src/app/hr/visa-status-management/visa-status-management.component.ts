@@ -25,32 +25,42 @@ export class VisaStatusManagementComponent implements OnInit {
     this.visaStatusService.getInProgressVisaStatuses().subscribe(users => {
       this.inProgressDataSource = users.map(item => ({
         ...item,
-        nextStep: this.calculateNextStep(item.applicationStatus),
-        needsApproval: this.doesStepNeedApproval(item.applicationStatus)
+        currentStep: this.calculateCurrentStep(item.visa.i20.status),
+        needsApproval: this.doesStepNeedApproval(item.visa.i20.status),
       }));
-      this.unfilteredDataSource = users.map(item => ({
-        ...item,
-        nextStep: this.calculateNextStep(item.applicationStatus),
-        needsApproval: this.doesStepNeedApproval(item.applicationStatus)
-      }));
+
+      this.unfilteredDataSource = [...this.inProgressDataSource];
     });
+
     this.visaStatusService.getAllVisaStatuses().subscribe(users => {
       this.allDataSource = users;
     });
   }
 
-  calculateNextStep(currentStep: string): string {
-    if (currentStep === 'sent registration token') {
-      return 'submit onboarding application';
+  calculateCurrentStep(i20Status: string): string {
+    if (i20Status === 'Uploading') {
+      return 'sent registration token';
     }
-    if (currentStep === 'submitted OPT receipt') {
-      return 'wait for HR approval';
+    if (i20Status === 'Pending') {
+      return 'submitted OPT receipt';
     }
     return 'unknown';
   }
 
-  doesStepNeedApproval(currentStep: string): boolean {
-    return currentStep === 'submitted OPT receipt';
+  calculateNextStep(currentStep: string): string {
+    switch (currentStep) {
+      case 'sent registration token':
+        return 'submit onboarding application';
+      case 'submitted OPT receipt':
+        return 'wait for HR approval';
+      default:
+        return 'unknown';
+    }
+  }
+
+
+  doesStepNeedApproval(i20Status: string): boolean {
+    return i20Status === 'Pending';
   }
 
 

@@ -7,15 +7,16 @@ import { HousingManagementComponent } from './housing-management/housing-managem
 import { HrHomeComponent } from './hr-home/hr-home.component';
 
 import { NavigationComponent } from './navigation/navigation.component';
+import { HrGuard } from '../hr.guard';
 
 
 const hrRoutes: Routes = [
-  { path: 'visa-status', component: VisaStatusManagementComponent },
-  { path: 'hr-home', component: HrHomeComponent },
-  { path: 'employee-profiles', component: EmployeeProfilesComponent },
-  { path: 'visa-status-management', component: VisaStatusManagementComponent },
-  { path: 'hiring-management', component: HiringManagementComponent },
-  { path: 'housing-management', component: HousingManagementComponent },
+  { path: 'visa-status', component: VisaStatusManagementComponent, canActivate: [HrGuard] },
+  { path: 'hr-home', component: HrHomeComponent, canActivate: [HrGuard] },
+  { path: 'employee-profiles', component: EmployeeProfilesComponent, canActivate: [HrGuard] },
+  { path: 'visa-status-management', component: VisaStatusManagementComponent, canActivate: [HrGuard] },
+  { path: 'hiring-management', component: HiringManagementComponent, canActivate: [HrGuard] },
+  { path: 'housing-management', component: HousingManagementComponent, canActivate: [HrGuard] },
 ];
 
 @NgModule({

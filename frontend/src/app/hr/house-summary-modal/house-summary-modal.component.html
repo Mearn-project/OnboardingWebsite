@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{ data.house.address }}</h2>
+<mat-dialog-content>
+  <p>Landlord: {{ data.house.landlord.fullName }} ({{ data.house.landlord.phoneNumber }})</p>
+  <p>Residents: {{ data.house.residents.length }}</p>
+  <div *ngFor="let report of data.house.facilityReports">
+    <h3>{{ report.title }}</h3>
+    <p>Status: {{ report.status }}</p>
+    <div *ngFor="let comment of report.comments">
+      <p>{{ comment.description }} - ({{ comment.timestamp | date }})</p>
+    </div>
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Add a comment</mat-label>
+        <input matInput #commentInput>
+      </mat-form-field>
+      <button mat-button (click)="addComment(report._id, commentInput.value)">Add Comment</button>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

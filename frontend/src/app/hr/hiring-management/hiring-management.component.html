@@ -24,13 +24,10 @@
           <mat-card-title>{{ application.firstName }} {{ application.lastName }}</mat-card-title>
           <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content>
-          Application Status: {{ application.applicationStatus }}
-        </mat-card-content>
         <mat-card-actions>
-          <button mat-button (click)="viewApplication(application._id)">View Application</button>
+          <button mat-button (click)="viewApplication(application)">View Application</button>
           <button mat-button (click)="approveApplication(application._id)">Approve</button>
-          <button mat-button (click)="rejectApplication(application._id, 'Your feedback')">Reject</button>
+          <button mat-button (click)="rejectApplication(application._id)">Reject</button>
         </mat-card-actions>
       </mat-card>
     </div>
@@ -44,17 +41,13 @@
           <mat-card-title>{{ application.firstName }} {{ application.lastName }}</mat-card-title>
           <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content>
-          Application Status: {{ application.applicationStatus }}
-        </mat-card-content>
         <mat-card-actions>
-          <button mat-button (click)="viewApplication(application._id)">View Application</button>
+          <button mat-button (click)="viewApplication(application)">View Application</button>
         </mat-card-actions>
       </mat-card>
     </div>
   </div>
 
-  <!-- Approved Applications Section -->
   <div class="application-section">
     <h2>Approved Applications</h2>
     <div *ngFor="let application of approvedApplications" class="application-card">
@@ -63,11 +56,8 @@
           <mat-card-title>{{ application.firstName }} {{ application.lastName }}</mat-card-title>
           <mat-card-subtitle>{{ application.email }}</mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content>
-          Application Status: {{ application.applicationStatus }}
-        </mat-card-content>
         <mat-card-actions>
-          <button mat-button (click)="viewApplication(application._id)">View Application</button>
+          <button mat-button (click)="viewApplication(application)">View Application</button>
         </mat-card-actions>
       </mat-card>
     </div>

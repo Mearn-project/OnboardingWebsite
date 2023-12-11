@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { HiringService } from '../../services/hiring.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TokenModalComponent } from '../token-modal/token-modal.component';
+import { Application } from '../../models/application.model';
+import { ApplicationModalComponent } from '../application-modal/application-modal.component';
+import { RejectApplicationModalComponent } from '../reject-application-modal/reject-application-modal.component';
 
 @Component({
   selector: 'app-hiring-management',
@@ -10,10 +13,10 @@ import { TokenModalComponent } from '../token-modal/token-modal.component';
 })
 export class HiringManagementComponent implements OnInit {
   tokens: any[] = [];
-  applications: any[] = [];
-  pendingApplications: any[] = [];
-  rejectedApplications: any[] = [];
-  approvedApplications: any[] = [];
+  // applications: any[] = [];
+  pendingApplications: Application[] = [];
+  rejectedApplications: Application[] = [];
+  approvedApplications: Application[] = [];
 
   constructor(
     private hiringService: HiringService,
@@ -48,15 +51,15 @@ export class HiringManagementComponent implements OnInit {
   loadApplicationsByStatus() {
       this.hiringService.getPendingApplications().subscribe(data => {
         this.pendingApplications = data;
-        console.log(data)
+        // console.log(data)
       });
       this.hiringService.getRejectedApplications().subscribe(data => {
         this.rejectedApplications = data;
-        console.log(data)
+        // console.log(data)
       });
       this.hiringService.getApprovedApplications().subscribe(data => {
         this.approvedApplications = data;
-        console.log(data)
+        // console.log(data)
       });
     }
 
@@ -67,20 +70,39 @@ export class HiringManagementComponent implements OnInit {
     });
   }
 
-  viewApplication(id: number) {
-    window.open('/application/' + id, '_blank');
+  viewApplication(application: Application) {
+    this.dialog.open(ApplicationModalComponent, {
+      width: '500px',
+      data: application
+    });
   }
 
 
-  approveApplication(id: number) {
+  approveApplication(id: string) {
     this.hiringService.approveApplication(id).subscribe(() => {
       this.loadApplicationsByStatus();
     });
   }
 
-  rejectApplication(id: number, feedback: string) {
-    this.hiringService.rejectApplication(id, feedback).subscribe(() => {
-      this.loadApplicationsByStatus();
+  // rejectApplication(id: string, feedback: string) {
+  //   this.hiringService.rejectApplication(id, feedback).subscribe(() => {
+  //     this.loadApplicationsByStatus();
+  //   });
+  // }
+
+  rejectApplication(id: string) {
+    const dialogRef = this.dialog.open(RejectApplicationModalComponent, {
+      width: '500px',
+      data: { applicationId: id }
+    });
+
+    dialogRef.afterClosed().subscribe(feedback => {
+      if (feedback) {
+        this.hiringService.rejectApplication(id, feedback).subscribe(() => {
+          this.loadApplicationsByStatus();
+        });
+      }
     });
   }
+
 }
