@@ -13,19 +13,19 @@
         (change)="onFileSelected($event, 'optReceipt')"
         enctype="multipart/form-data"
       />
-      <input
+      <!-- <input
         type="file"
         #fileInput
         style="display: none"
         (change)="onFileSelected($event, 'optReceipt')"
-      />
+      /> -->
       <button
         mat-raised-button
         *ngIf="
           visaStatus.optReceipt.status === 'Approved' &&
-          !visaStatus.optEad.isVisible
+          !visaStatus.optEAD.isVisible
         "
-        (click)="proceedToNext('optEad')"
+        (click)="proceedToNext('optEAD')"
       >
         Proceed to OPT EAD
       </button>
@@ -38,31 +38,31 @@
     <!-- OPT EAD Section -->
     <div
       *ngIf="
-        visaStatus.optEad.isVisible ||
+        visaStatus.optEAD.isVisible ||
         visaStatus.optReceipt.status === 'Approved'
       "
     >
       <h3>OPT EAD</h3>
-      <p>{{ visaStatus.optEad.statusMessage }}</p>
+      <p>{{ visaStatus.optEAD.statusMessage }}</p>
       <input
         type="file"
-        name="optEad"
-        *ngIf="visaStatus.optEad.status === 'Uploading'"
-        (change)="onFileSelected($event, 'optEad')"
+        name="optEAD"
+        *ngIf="visaStatus.optEAD.status === 'Uploading'"
+        (change)="onFileSelected($event, 'optEAD')"
         enctype="multipart/form-data"
       />
       <button
         mat-raised-button
         *ngIf="
-          visaStatus.optEad.status === 'Approved' && !visaStatus.i983.isVisible
+          visaStatus.optEAD.status === 'Approved' && !visaStatus.i983.isVisible
         "
         (click)="proceedToNext('i983')"
       >
         Proceed to I-983 Form
       </button>
       <!-- Display HR feedback if Rejected -->
-      <p *ngIf="visaStatus.optEad.status === 'Rejected'">
-        {{ visaStatus.optEad.feedback }}
+      <p *ngIf="visaStatus.optEAD.status === 'Rejected'">
+        {{ visaStatus.optEAD.feedback }}
       </p>
     </div>
 

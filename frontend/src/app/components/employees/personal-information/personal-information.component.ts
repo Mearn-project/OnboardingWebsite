@@ -17,6 +17,7 @@ export class PersonalInformationComponent implements OnInit {
   personalInfoForm: FormGroup;
   nameForm: FormGroup;
   documents: Array<Doc>;
+  currentSection: EditModeKeys;
   editMode: { [key in EditModeKeys]: boolean } = {
     name: false,
     address: false,
@@ -35,6 +36,7 @@ export class PersonalInformationComponent implements OnInit {
     this.personalInfoForm = new FormGroup({});
     this.nameForm = new FormGroup({});
     this.documents = [];
+    this.currentSection = 'name';
   }
 
   ngOnInit(): void {
@@ -83,7 +85,7 @@ export class PersonalInformationComponent implements OnInit {
       next: (data) => {
         console.log(data);
         const personalInfo = data.application;
-        const emergencyContact = personalInfo.emergencyContacts;
+        const emergencyContact = personalInfo.emergencyContacts[0];
         this.personalInfoForm.patchValue({
           name: {
             firstName: personalInfo.firstName || '',
@@ -116,7 +118,6 @@ export class PersonalInformationComponent implements OnInit {
             relationship: emergencyContact.relationship || '',
           },
         });
-        // TODO: load document
         this.userData = personalInfo;
       },
       error: (error) => {
@@ -135,6 +136,8 @@ export class PersonalInformationComponent implements OnInit {
 
   toggleEdit(section: EditModeKeys): void {
     this.editMode[section] = !this.editMode[section];
+    this.currentSection = section;
+    console.log('after toggle edit: ', this.currentSection);
   }
 
   save(section: EditModeKeys): void {
@@ -142,12 +145,8 @@ export class PersonalInformationComponent implements OnInit {
     const sectionGroup = this.personalInfoForm.get(section);
     const formData = new FormData();
     for (const controlName of Object.keys(sectionGroup?.value)) {
-      console.log('control Name: ', controlName);
-      console.log('value: ', sectionGroup?.value.controlName);
       formData.append(controlName, sectionGroup?.value.controlName);
     }
-    console.log('raw value: ', sectionGroup?.value);
-    console.log('form data: ', formData);
     if (sectionGroup?.valid) {
       this.userService.updateSection(section, sectionGroup.value).subscribe({
         next: () => {
@@ -155,7 +154,6 @@ export class PersonalInformationComponent implements OnInit {
           console.log('Update successful');
           this.editMode[section] = false;
           this.loadUserInfo();
-          // window.location.reload();
         },
         error: () => {
           // Handle errors here, e.g., showing an error message
@@ -170,17 +168,13 @@ export class PersonalInformationComponent implements OnInit {
       width: '250px',
       data: { message: 'Discard all changes?' },
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result == 'yes') {
-        console.log('returned yes');
-        // TODO: reset initial data
         this.initializeForm(); // Reset form with initial data
-        this.editMode[section] = false;
+        this.editMode[this.currentSection] = false;
+        this.loadUserInfo();
       }
     });
-    // Implement logic to reset the form or reload original data
-    this.editMode[section] = false;
   }
 
   loadDocuments(): void {
@@ -193,9 +187,7 @@ export class PersonalInformationComponent implements OnInit {
               url: visaStatus[visa].url || '',
               previewUrl: visaStatus[visa].previewUrl || '',
             };
-            console.log('document being pushed: ', document);
             this.documents?.push(document);
-            console.log('documents we get is: ', this.documents);
           }
         }
       },
@@ -204,9 +196,6 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   downloadDocument(doc: any): void {
-    // Implement logic to download the document
-    // This typically involves setting the window location to the document's URL
-    // or creating an anchor element and triggering a click
     const link = document.createElement('a');
     link.href = doc.url;
     link.download = doc.name;
@@ -214,8 +203,6 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   previewDocument(doc: any): void {
-    // Implement logic to preview the document
-    // This could be opening a new window or tab with the document URL
     window.open(doc.previewUrl, '_blank');
   }
 }
