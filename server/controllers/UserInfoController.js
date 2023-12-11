@@ -273,7 +273,7 @@ const updateFiles = async (req, res) => {
           const fileName = file.fieldname;
           if (fileName === "optReceiptUrl") {
             const params = {
-              Bucket: "my-onboarding-project",
+              Bucket: "revsawsbucket",
               Key: `${file.originalname}`,
               Body: fs.createReadStream(path.normalize(file.path)),
               ACL: "public-read",
@@ -291,7 +291,7 @@ const updateFiles = async (req, res) => {
                   application[`${fileName}`] = data.Location;
   
                   const previewParams = {
-                    Bucket: "my-onboarding-project",
+                    Bucket: "revsawsbucket",
                     Key: `${file.originalname}`,
                     ResponseContentType: "application/pdf",
                     ResponseContentDisposition: "inline",
@@ -306,7 +306,7 @@ const updateFiles = async (req, res) => {
           } else {
             const fileData = fs.readFileSync(file.path);
             const params = {
-              Bucket: "my-onboarding-project",
+              Bucket: "revsawsbucket",
               Key: `${file.originalname}`,
               Body: fileData,
               ContentType: file.mimetype,
@@ -325,7 +325,7 @@ const updateFiles = async (req, res) => {
                   application[`${fileName}`] = data.Location;
                   if (fileName === "licenseCopyUrl") {
                     const previewParams = {
-                      Bucket: "my-onboarding-project",
+                      Bucket: "revsawsbucket",
                       Key: `${file.originalname}`,
                       ResponseContentType: "image/jpeg",
                       ResponseContentDisposition: "inline",
