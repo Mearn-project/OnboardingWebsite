@@ -22,7 +22,6 @@
                 <mat-list-item
                   >Preferred Name: {{ userData?.preferredName }}</mat-list-item
                 >
-                <!-- ... other name fields -->
               </mat-list>
               <button
                 mat-raised-button
@@ -131,50 +130,53 @@
         <mat-card-title>Contact Info</mat-card-title>
         <div *ngIf="!editMode.contactInfo; else editContactInfo">
           <mat-card>
-            <mat-list>
-              <mat-list-item
-                >Building/Apt:
-                {{ userData?.address?.buildingApt }}</mat-list-item
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item
+                  >Cell Phone Number: {{ userData?.cellPhone }}</mat-list-item
+                >
+                <mat-list-item
+                  >Work Phone Number: {{ userData?.workPhone }}</mat-list-item
+                >
+              </mat-list>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="toggleEdit('contactInfo')"
               >
-              <mat-list-item>City: {{ userData?.address?.city }}</mat-list-item>
-              <mat-list-item
-                >Street: {{ userData?.address?.street }}</mat-list-item
-              >
-              <mat-list-item
-                >State: {{ userData?.address?.state }}</mat-list-item
-              >
-              <mat-list-item>Zip: {{ userData?.address?.zip }}</mat-list-item>
-            </mat-list>
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="toggleEdit('contactInfo')"
-            >
-              Edit
-            </button>
+                Edit
+              </button>
+            </mat-card-content>
           </mat-card>
         </div>
         <ng-template #editContactInfo>
           <form [formGroup]="getFormGroup('contactInfo')">
-            <mat-form-field appearance="fill">
-              <mat-label>Cell Phone Number</mat-label>
-              <input matInput formControlName="cell" required />
-            </mat-form-field>
-            <!-- ... other contact info fields -->
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="save('contactInfo')"
-            >
-              Save
-            </button>
-            <button
-              mat-raised-button
-              color="warn"
-              (click)="cancel('contactInfo')"
-            >
-              Cancel
-            </button>
+            <mat-card>
+              <mat-card-content>
+                <mat-form-field appearance="fill">
+                  <mat-label>Cell Phone Number</mat-label>
+                  <input matInput formControlName="cell" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Work Phone Number</mat-label>
+                  <input matInput formControlName="work" />
+                </mat-form-field>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="save('contactInfo')"
+                >
+                  Save
+                </button>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  (click)="cancel('contactInfo')"
+                >
+                  Cancel
+                </button>
+              </mat-card-content>
+            </mat-card>
           </form>
         </ng-template>
       </mat-card>
@@ -183,19 +185,33 @@
       <mat-card>
         <mat-card-title>Employment</mat-card-title>
         <div *ngIf="!editMode.employment; else editEmployment">
-          <!-- Display Employment Information -->
-          <!-- ... -->
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="toggleEdit('employment')"
-          >
-            Edit
-          </button>
+          <mat-card>
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item
+                  >Visa Type: {{ userData?.visaTitle }}</mat-list-item
+                >
+                <mat-list-item
+                  >Start Date: {{ userData?.startDate }}</mat-list-item
+                >
+                <mat-list-item>End Date: {{ userData?.endDate }}</mat-list-item>
+              </mat-list>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="toggleEdit('employment')"
+              >
+                Edit
+              </button>
+            </mat-card-content>
+          </mat-card>
         </div>
         <ng-template #editEmployment>
           <form [formGroup]="getFormGroup('employment')">
-            <!-- ... employment fields using <mat-form-field> -->
+            <mat-form-field appearance="fill">
+              <mat-label>Work Phone Number</mat-label>
+              <input matInput formControlName="work" />
+            </mat-form-field>
             <button
               mat-raised-button
               color="primary"
@@ -218,8 +234,9 @@
       <mat-card>
         <mat-card-title>Emergency Contact</mat-card-title>
         <div *ngIf="!editMode.emergencyContact; else editEmergencyContact">
-          <!-- Display Emergency Contact Information -->
-          <!-- ... -->
+          <mat-card>
+            <mat-card-content> </mat-card-content>
+          </mat-card>
           <button
             mat-raised-button
             color="primary"
@@ -252,8 +269,26 @@
       <!-- Documents Section -->
       <mat-card>
         <mat-card-title>Documents</mat-card-title>
-        <!-- Display list of documents with options to download or preview -->
-        <!-- ... -->
+        <!-- Display Document List -->
+        <div *ngFor="let doc of documents">
+          <div *ngIf="doc.url !== ''">
+            <h3>{{ doc.name }}</h3>
+            <button
+              *ngIf="doc.url !== ''"
+              mat-button
+              (click)="downloadDocument(doc)"
+            >
+              Download
+            </button>
+            <button
+              *ngIf="doc.previewUrl !== ''"
+              mat-button
+              (click)="previewDocument(doc)"
+            >
+              Preview
+            </button>
+          </div>
+        </div>
       </mat-card>
     </form>
   </mat-card-content>

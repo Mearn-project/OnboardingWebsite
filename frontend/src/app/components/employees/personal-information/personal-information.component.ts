@@ -1,10 +1,11 @@
+import { Document } from './../../../models/visa-status.model';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
-import { Employee } from 'src/app/models/employee.model';
 import { UserService } from 'src/app/services/user.service';
-import { EditModeKeys } from 'src/app/models/personal-info.model';
+import { Doc, EditModeKeys } from 'src/app/models/personal-info.model';
+import { EmployeeVisaStatusService } from 'src/app/services/employee-visa-status.service';
 
 @Component({
   selector: 'employee-personal-information',
@@ -15,26 +16,31 @@ export class PersonalInformationComponent implements OnInit {
   userData?: any;
   personalInfoForm: FormGroup;
   nameForm: FormGroup;
+  documents: Array<Doc>;
   editMode: { [key in EditModeKeys]: boolean } = {
     name: false,
     address: false,
     contactInfo: false,
     employment: false,
     emergencyContact: false,
+    documents: false,
   };
 
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
-    public userService: UserService
+    public userService: UserService,
+    public visaService: EmployeeVisaStatusService
   ) {
     this.personalInfoForm = new FormGroup({});
     this.nameForm = new FormGroup({});
+    this.documents = [];
   }
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadUserInfo();
+    this.loadDocuments();
   }
 
   initializeForm(): void {
@@ -73,9 +79,8 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   loadUserInfo(): void {
-    const userId = '656f827400e1e8b8ebad973a';
-    this.userService.getUserInfo().subscribe(
-      (data) => {
+    this.userService.getUserInfo().subscribe({
+      next: (data) => {
         console.log(data);
         const personalInfo = data.application;
         const emergencyContact = personalInfo.emergencyContacts;
@@ -111,19 +116,13 @@ export class PersonalInformationComponent implements OnInit {
             relationship: emergencyContact.relationship || '',
           },
         });
+        // TODO: load document
         this.userData = personalInfo;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error fetching user data:', error);
-      }
-    );
-    // should match this:
-    // this.userData = {
-    //   name: { firstName: 'John', lastName: 'Doe' /* ... */ },
-    //   address: { building: '123', street: 'Main St' /* ... */ },
-    //   // ... other sections
-    //   documents: [{ name: 'Document1.pdf' }, { name: 'Document2.pdf' }],
-    // };
+      },
+    });
   }
 
   getFormGroup(section: string): FormGroup {
@@ -150,20 +149,20 @@ export class PersonalInformationComponent implements OnInit {
     console.log('raw value: ', sectionGroup?.value);
     console.log('form data: ', formData);
     if (sectionGroup?.valid) {
-      this.userService.updateSection(section, sectionGroup.value).subscribe(
-        () => {
+      this.userService.updateSection(section, sectionGroup.value).subscribe({
+        next: () => {
           // Handle the successful response here, e.g., showing a success message
           console.log('Update successful');
           this.editMode[section] = false;
+          this.loadUserInfo();
+          // window.location.reload();
         },
-        () => {
+        error: () => {
           // Handle errors here, e.g., showing an error message
           console.error('Update failed');
-        }
-      );
+        },
+      });
     }
-    this.editMode[section] = false;
-    this.loadUserInfo();
   }
 
   cancel(section: EditModeKeys): void {
@@ -182,5 +181,41 @@ export class PersonalInformationComponent implements OnInit {
     });
     // Implement logic to reset the form or reload original data
     this.editMode[section] = false;
+  }
+
+  loadDocuments(): void {
+    this.visaService.getVisaStatus().subscribe({
+      next: (visaStatus) => {
+        for (const visa of Object.keys(visaStatus)) {
+          if (visa !== '_id' && visa !== '__v') {
+            let document: Doc = {
+              name: visa,
+              url: visaStatus[visa].url || '',
+              previewUrl: visaStatus[visa].previewUrl || '',
+            };
+            console.log('document being pushed: ', document);
+            this.documents?.push(document);
+            console.log('documents we get is: ', this.documents);
+          }
+        }
+      },
+      error: () => {},
+    });
+  }
+
+  downloadDocument(doc: any): void {
+    // Implement logic to download the document
+    // This typically involves setting the window location to the document's URL
+    // or creating an anchor element and triggering a click
+    const link = document.createElement('a');
+    link.href = doc.url;
+    link.download = doc.name;
+    link.click();
+  }
+
+  previewDocument(doc: any): void {
+    // Implement logic to preview the document
+    // This could be opening a new window or tab with the document URL
+    window.open(doc.previewUrl, '_blank');
   }
 }
