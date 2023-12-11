@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, sendEmail, login, logout, verifyRegistrationToken } = require('../controllers/UserController');
+const { register, sendEmail, login, logout, verifyRegistrationToken, parseToken } = require('../controllers/UserController');
 const { createUserValidation, loginUserValidation, resetValidation } = require('../services/UserMiddleware');
 
 const router = express.Router();
@@ -36,6 +36,8 @@ router.route('/login')
 
 
 router.get('/logout', logout)
+
+router.get('/parseToken', parseToken)
 
 // router.get('/admin', async (req, res) => {
 

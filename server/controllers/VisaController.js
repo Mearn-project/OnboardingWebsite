@@ -53,6 +53,7 @@ const updateVisaInfo = async (req, res) => {
     }
 
     let fileUrl = "";
+    let preview = "";
     let updatedData = "";
 
     const uploadPromises = Object.keys(files).map(async (key) => {
@@ -79,6 +80,15 @@ const updateVisaInfo = async (req, res) => {
               console.log("File uploaded successfully:", data.Location);
 
               fileUrl = data.Location;
+              
+              const previewParams = {
+                Bucket: 'revsawsbucket',
+                Key: `${file.originalname}`,
+                ResponseContentType: 'application/pdf',
+                ResponseContentDisposition: 'inline'
+                };
+
+                preview = s3.getSignedUrl('getObject', previewParams);
 
               resolve();
             }
@@ -97,6 +107,7 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
+          previewUrl: preview
         };
       }
       if (updatedData === "optEAD") {
@@ -104,6 +115,7 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
+          previewUrl: preview
         };
       }
       if (updatedData === "i983") {
@@ -111,6 +123,7 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
+          previewUrl: preview
         };
       }
       if (updatedData === "i20") {
@@ -118,6 +131,7 @@ const updateVisaInfo = async (req, res) => {
           status: "Pending",
           feedback: "",
           url: fileUrl,
+          previewUrl: preview
         };
       }
 
